@@ -82,7 +82,7 @@ const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
               transition={{ repeat: Infinity, repeatType: "reverse", duration: 1 }}
             >
               <Button 
-                type="primary" 
+                // type="primary" 
                 size="large"
                 icon={<CheckOutlined />}
                 onClick={handleMarkAsCompleted}
@@ -101,7 +101,7 @@ const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
               />
               
               <Button 
-                type="primary" 
+                // type="primary" 
                 size="large"
                 icon={<ArrowRightOutlined />}
                 onClick={handleNextLesson}

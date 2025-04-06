@@ -106,7 +106,7 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState({
-    name: "Pythonchick User",
+    name: "Pythonchik User",
     level: 1,
     experience: 0,
     coins: 100,
@@ -116,13 +116,13 @@ export const AppProvider = ({ children }) => {
   
   const [courses, setCourses] = useState(() => {
     // Try to get saved courses data from localStorage
-    const savedCourses = localStorage.getItem('pythonchick-courses');
+    const savedCourses = localStorage.getItem('pythonchik-courses');
     return savedCourses ? JSON.parse(savedCourses) : initialCourses;
   });
 
   // Save courses to localStorage when they change
   useEffect(() => {
-    localStorage.setItem('pythonchick-courses', JSON.stringify(courses));
+    localStorage.setItem('pythonchik-courses', JSON.stringify(courses));
   }, [courses]);
 
   // Function to mark a lesson as completed
@@ -188,7 +188,7 @@ export const AppProvider = ({ children }) => {
   const resetProgress = () => {
     setCourses(initialCourses);
     setUser({
-      name: "Pythonchick User",
+      name: "Pythonchik User",
       level: 1,
       experience: 0,
       coins: 100,

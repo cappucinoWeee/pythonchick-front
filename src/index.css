@@ -6,12 +6,28 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-primary: #FF8C00;
+    --color-primary-light: #FFAD4D;
+    --color-primary-dark: #E67E00;
+    --color-secondary: #43A047;
+    --color-secondary-light: #66BB6A;
+    --color-secondary-dark: #2E7D32;
+    --color-background: #F9F9F9;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
-    @apply font-sans bg-background text-gray-800;
+    @apply font-sans bg-background text-gray-800 min-h-screen;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply font-display font-medium;
   }
 }
 
@@ -38,6 +54,64 @@
   
   .input {
     @apply px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+  
+  .shadow-card {
+    @apply shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+  
+  .text-primary {
+    @apply text-[var(--color-primary)];
+  }
+  
+  .bg-primary {
+    @apply bg-[var(--color-primary)];
+  }
+  
+  .bg-primary-light {
+    @apply bg-[var(--color-primary-light)];
+  }
+  
+  .bg-primary-dark {
+    @apply bg-[var(--color-primary-dark)];
+  }
+  
+  .text-secondary {
+    @apply text-[var(--color-secondary)];
+  }
+  
+  .bg-secondary {
+    @apply bg-[var(--color-secondary)];
+  }
+  
+  .bg-secondary-light {
+    @apply bg-[var(--color-secondary-light)];
+  }
+  
+  .bg-secondary-dark {
+    @apply bg-[var(--color-secondary-dark)];
+  }
+  
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 }
 
@@ -71,6 +145,22 @@
   }
 }
 
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Progress path styles */
 .progress-path {
   stroke-dasharray: 1000;
@@ -80,6 +170,55 @@
 
 .progress-path.completed {
   stroke-dashoffset: 0;
+}
+
+/* Ant Design customizations */
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--color-primary);
+}
+
+.ant-tabs-ink-bar {
+  background: var(--color-primary);
+}
+
+.ant-progress-bg {
+  transition: all 0.8s cubic-bezier(0.08, 0.82, 0.17, 1);
+}
+
+.ant-tag {
+  border-radius: 4px;
+}
+
+.ant-btn-primary {
+  background-color: #FF8C00 !important;
+  border-color: #FF8C00 !important;
+}
+
+.ant-btn-primary:hover, 
+.ant-btn-primary:focus {
+  background-color: #FF7000 !important;
+  border-color: #FF7000 !important;
+}
+
+.ant-badge-count {
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.ant-step-icon-dot {
+  background: var(--color-primary) !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #fff;
+  border-color: var(--color-primary);
+}
+
+.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+  color: var(--color-primary);
+}
+
+.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title {
+  color: var(--color-primary);
 }
 
 /* Game elements */
@@ -101,4 +240,36 @@
 
 .tile-completed {
   @apply bg-secondary text-white cursor-pointer;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .card {
+    padding: 16px;
+  }
 }

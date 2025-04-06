@@ -1,7 +1,7 @@
 // src/pages/CourseDetailPage.js
 import React from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
-import { Breadcrumb, Empty, Button } from 'antd';
+import { Breadcrumb, Button } from 'antd';
 import { 
   HomeOutlined, 
   BookOutlined, 
