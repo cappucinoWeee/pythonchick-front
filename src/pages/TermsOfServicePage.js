@@ -1,6 +1,6 @@
 // src/pages/TermsOfServicePage.js
 import React from 'react';
-import { Card, Typography, Breadcrumb, Button, Divider, Space, List } from 'antd';
+import { Card, Typography, Breadcrumb, Button, Divider, Space } from 'antd';
 import { Link } from 'react-router-dom';
 import { HomeOutlined, FileTextOutlined, PrinterOutlined, DownloadOutlined } from '@ant-design/icons';
 

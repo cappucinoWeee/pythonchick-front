@@ -13,6 +13,7 @@ const initialCourses = [
         id: 101,
         title: "Getting Started",
         description: "Introduction to Python",
+        
         lessons: [
           { id: 1001, title: "What is Python?", type: "lesson", completed: false },
           { id: 1002, title: "Installing Python", type: "lesson", completed: false },

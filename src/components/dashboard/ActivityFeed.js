@@ -79,6 +79,9 @@ const ActivityCard = ({ activity }) => {
             <p className="font-medium text-sm mb-0.5 truncate">
               {activity.title}
             </p>
+            {activity.xp > 0 && (
+            <Tag color="volcano" className="flex-shrink-0">+{activity.xp} XP</Tag>
+          )}
             {activity.description && (
               <p className="text-gray-600 text-xs mb-1">
                 {activity.description}
@@ -90,9 +93,7 @@ const ActivityCard = ({ activity }) => {
               </Link>
             )}
           </div>
-          {activity.xp > 0 && (
-            <Tag color="volcano" className="flex-shrink-0">+{activity.xp} XP</Tag>
-          )}
+          
         </div>
         <div className="flex justify-between items-center mt-1">
           <div className="text-xs text-gray-500 flex items-center">

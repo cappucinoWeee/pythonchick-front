@@ -87,10 +87,6 @@ const ForgotPasswordPage = () => {
               src="/logo.png" 
               alt="Pythonchick" 
               className="h-16 mx-auto"
-              onError={(e) => { 
-                e.target.src = 'https://via.placeholder.com/64x64?text=🐣'; 
-                e.target.onerror = null; 
-              }}
             />
             <Title level={3} className="font-display text-primary mt-2">Reset Password</Title>
             <Text className="text-gray-600">Follow the steps to reset your password</Text>

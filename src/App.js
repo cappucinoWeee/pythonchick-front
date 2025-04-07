@@ -20,6 +20,12 @@ import NotFoundPage from './pages/NotFoundPage';
 
 // Context Provider
 import { AppProvider } from './context/AppContext';
+import ContactPage from './pages/ContactPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import SupportPage from './pages/SupportPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import LogoutPage from './pages/LogoutPage';
 
 // Custom theme configuration for Ant Design
 const theme = {
@@ -43,9 +49,17 @@ function App() {
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/logout" element={<LogoutPage />} />
+            <Route path="/verification" element={<EmailVerificationPage />} />
+            <Route path="/forgot" element={<ForgotPasswordPage />} />
+
             
             {/* Protected routes with MainLayout */}
             <Route path="/" element={<MainLayout />}>
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/terms" element={<TermsOfServicePage />} />
+              <Route path="/support" element={<SupportPage />} />
+
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="courses" element={<CoursesPage />} />

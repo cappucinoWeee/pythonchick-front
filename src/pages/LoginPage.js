@@ -55,7 +55,7 @@ const LoginPage = () => {
             >
               <div className="text-center mb-8">
                 <img 
-                  src="/logo-large.png" 
+                  src="/logo.png" 
                   alt="Pythonchick" 
                   className="h-32 mx-auto"
                 />
@@ -165,7 +165,7 @@ const LoginPage = () => {
                   <Form.Item>
                     <div className="flex justify-between items-center">
                       <Checkbox name="remember">Remember me</Checkbox>
-                      <Link to="/forgot-password" className="text-primary hover:text-primary-dark">
+                      <Link to="/forgot" className="text-primary hover:text-primary-dark">
                         Forgot password?
                       </Link>
                     </div>

@@ -55,9 +55,9 @@ const Dashboard = () => {
             </Col>
             <Col xs={24} md={8} className="flex justify-center md:justify-end items-center">
               <img 
-                src="/dashboard-illustration.png" 
+                src="/dashboard.png" 
                 alt="Learning" 
-                className="max-h-40"
+                className="max-h-45"
               />
             </Col>
           </Row>

@@ -1,0 +1,612 @@
+{
+  "platform": "Learning Python",
+  "courses": [
+    {
+      "id": 1,
+      "title": "Python Basics",
+      "description": "Start your Python journey with foundational concepts.",
+      "image": "/images/python-basics.png",
+      "topics": [
+        {
+          "id": 101,
+          "title": "Introduction",
+          "description": "Getting started with Python",
+          "lessons": [
+            {
+              "id": 1001,
+              "title": "What is Python?",
+              "type": "lesson",
+              "content": [
+                { "title": "Overview", "description": "Python is a versatile language...", "image": null },
+                { "title": "History", "description": "Created by Guido van Rossum in 1991...", "image": null }
+              ]
+            },
+            {
+              "id": 1002,
+              "title": "Installing Python",
+              "type": "lesson",
+              "content": [
+                { "title": "Installation Steps", "description": "Download from python.org...", "image": null },
+                { "title": "Verify Installation", "description": "Use `python --version`", "image": null }
+              ]
+            },
+            {
+              "id": 1003,
+              "title": "Your First Program",
+              "type": "lesson",
+              "content": [
+                { "title": "Hello World", "description": "Write your first line of code.", "image": null },
+                { "title": "Running Code", "description": "Use terminal or IDE", "image": null }
+              ]
+            },
+            {
+              "id": 1004,
+              "title": "First Code Challenge",
+              "type": "coding",
+              "task": "Write a program that prints your name.",
+              "expectedOutput": "Your Name"
+            },
+            {
+              "id": 1005,
+              "title": "Quiz: Introduction",
+              "type": "quiz",
+              "questions": [
+                "What is Python?",
+                "Who created Python?",
+                "What is the file extension for Python?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 102,
+          "title": "Variables",
+          "description": "Learn about Python variables",
+          "lessons": [
+            {
+              "id": 1101,
+              "title": "Declaring Variables",
+              "type": "lesson",
+              "content": [
+                { "title": "Basic Syntax", "description": "a = 5", "image": null },
+                { "title": "Variable Names", "description": "Rules for names", "image": null }
+              ]
+            },
+            {
+              "id": 1102,
+              "title": "Data Types",
+              "type": "lesson",
+              "content": [
+                { "title": "int, str, float", "description": "Common types", "image": null },
+                { "title": "Checking types", "description": "Use type()", "image": null }
+              ]
+            },
+            {
+              "id": 1103,
+              "title": "Type Conversion",
+              "type": "lesson",
+              "content": [
+                { "title": "Casting", "description": "int(), str(), float()", "image": null }
+              ]
+            },
+            {
+              "id": 1104,
+              "title": "Variable Challenge",
+              "type": "coding",
+              "task": "Create variables for name, age, and print a sentence.",
+              "expectedOutput": "My name is John and I am 25 years old."
+            },
+            {
+              "id": 1105,
+              "title": "Quiz: Variables",
+              "type": "quiz",
+              "questions": [
+                "How do you declare a variable?",
+                "What is type casting?",
+                "Name two data types."
+              ]
+            }
+          ]
+        },
+        {
+          "id": 103,
+          "title": "Strings",
+          "description": "Work with string data",
+          "lessons": [
+            {
+              "id": 1201,
+              "title": "String Basics",
+              "type": "lesson",
+              "content": [
+                { "title": "Creating Strings", "description": "Use quotes", "image": null },
+                { "title": "Multiline Strings", "description": "Use triple quotes", "image": null }
+              ]
+            },
+            {
+              "id": 1202,
+              "title": "String Methods",
+              "type": "lesson",
+              "content": [
+                { "title": ".upper(), .lower()", "description": "String functions", "image": null }
+              ]
+            },
+            {
+              "id": 1203,
+              "title": "String Formatting",
+              "type": "lesson",
+              "content": [
+                { "title": "f-strings", "description": "Embed variables", "image": null }
+              ]
+            },
+            {
+              "id": 1204,
+              "title": "String Task",
+              "type": "coding",
+              "task": "Create a formatted string with your name and city.",
+              "expectedOutput": "My name is Alice from New York."
+            },
+            {
+              "id": 1205,
+              "title": "Quiz: Strings",
+              "type": "quiz",
+              "questions": [
+                "How do you create a string?",
+                "What does .upper() do?",
+                "What are f-strings?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 104,
+          "title": "Numbers and Math",
+          "description": "Basic math operations",
+          "lessons": [
+            {
+              "id": 1301,
+              "title": "Arithmetic",
+              "type": "lesson",
+              "content": [
+                { "title": "Operators", "description": "+, -, *, /, //, %", "image": null }
+              ]
+            },
+            {
+              "id": 1302,
+              "title": "Order of Operations",
+              "type": "lesson",
+              "content": [
+                { "title": "PEMDAS", "description": "Math rule", "image": null }
+              ]
+            },
+            {
+              "id": 1303,
+              "title": "Using Math Module",
+              "type": "lesson",
+              "content": [
+                { "title": "import math", "description": "Use math functions", "image": null }
+              ]
+            },
+            {
+              "id": 1304,
+              "title": "Math Challenge",
+              "type": "coding",
+              "task": "Write a program to calculate area of a circle.",
+              "expectedOutput": "Area = 78.5"
+            },
+            {
+              "id": 1305,
+              "title": "Quiz: Math",
+              "type": "quiz",
+              "questions": [
+                "What does ** do?",
+                "How to find modulus?",
+                "Which module provides math functions?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 105,
+          "title": "Lists",
+          "description": "Store multiple values",
+          "lessons": [
+            {
+              "id": 1401,
+              "title": "Creating Lists",
+              "type": "lesson",
+              "content": [
+                { "title": "Syntax", "description": "Use square brackets", "image": null }
+              ]
+            },
+            {
+              "id": 1402,
+              "title": "Accessing Elements",
+              "type": "lesson",
+              "content": [
+                { "title": "Indexing", "description": "Start from 0", "image": null }
+              ]
+            },
+            {
+              "id": 1403,
+              "title": "List Methods",
+              "type": "lesson",
+              "content": [
+                { "title": ".append(), .remove()", "description": "Manipulate lists", "image": null }
+              ]
+            },
+            {
+              "id": 1404,
+              "title": "List Task",
+              "type": "coding",
+              "task": "Create a list of your 3 favorite foods and print them.",
+              "expectedOutput": "['Pizza', 'Sushi', 'Pasta']"
+            },
+            {
+              "id": 1405,
+              "title": "Quiz: Lists",
+              "type": "quiz",
+              "questions": [
+                "How do you create a list?",
+                "What is the index of the first element?",
+                "What does .append() do?"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Python Functions",
+      "description": "Learn how to define and use functions effectively.",
+      "image": "/images/python-functions.png",
+      "topics": [
+        {
+          "id": 201,
+          "title": "Function Basics",
+          "description": "Understand function definitions and calls",
+          "lessons": [
+            {
+              "id": 2001,
+              "title": "Defining Functions",
+              "type": "lesson",
+              "content": [
+                { "title": "Syntax", "description": "Use def keyword", "image": null },
+                { "title": "Example", "description": "def greet(): ...", "image": null }
+              ]
+            },
+            {
+              "id": 2002,
+              "title": "Calling Functions",
+              "type": "lesson",
+              "content": [
+                { "title": "How to Call", "description": "Use parentheses", "image": null }
+              ]
+            },
+            {
+              "id": 2003,
+              "title": "Return Statement",
+              "type": "lesson",
+              "content": [
+                { "title": "Returning Values", "description": "Use return keyword", "image": null }
+              ]
+            },
+            {
+              "id": 2004,
+              "title": "Function Challenge",
+              "type": "coding",
+              "task": "Create a function that returns the square of a number.",
+              "expectedOutput": "25"
+            },
+            {
+              "id": 2005,
+              "title": "Quiz: Function Basics",
+              "type": "quiz",
+              "questions": [
+                "How do you define a function?",
+                "What does return do?",
+                "How do you call a function?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 202,
+          "title": "Parameters and Arguments",
+          "description": "Learn how to pass and use arguments",
+          "lessons": [
+            {
+              "id": 2101,
+              "title": "Positional Arguments",
+              "type": "lesson",
+              "content": [
+                { "title": "Order Matters", "description": "Match argument order", "image": null }
+              ]
+            },
+            {
+              "id": 2102,
+              "title": "Keyword Arguments",
+              "type": "lesson",
+              "content": [
+                { "title": "Name-based", "description": "Specify argument names", "image": null }
+              ]
+            },
+            {
+              "id": 2103,
+              "title": "Default Parameters",
+              "type": "lesson",
+              "content": [
+                { "title": "Defaults", "description": "Set default values", "image": null }
+              ]
+            },
+            {
+              "id": 2104,
+              "title": "Parameter Task",
+              "type": "coding",
+              "task": "Create a greeting function with a default name parameter.",
+              "expectedOutput": "Hello, Python!"
+            },
+            {
+              "id": 2105,
+              "title": "Quiz: Parameters",
+              "type": "quiz",
+              "questions": [
+                "What is a default parameter?",
+                "What are keyword arguments?",
+                "How are arguments passed?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 203,
+          "title": "Scope and Lifetime",
+          "description": "Understand variable scope",
+          "lessons": [
+            {
+              "id": 2201,
+              "title": "Local Scope",
+              "type": "lesson",
+              "content": [
+                { "title": "Inside Functions", "description": "Limited to function body", "image": null }
+              ]
+            },
+            {
+              "id": 2202,
+              "title": "Global Scope",
+              "type": "lesson",
+              "content": [
+                { "title": "Outside Functions", "description": "Accessible globally", "image": null }
+              ]
+            },
+            {
+              "id": 2203,
+              "title": "Global Keyword",
+              "type": "lesson",
+              "content": [
+                { "title": "Modify Global", "description": "Use `global` keyword", "image": null }
+              ]
+            },
+            {
+              "id": 2204,
+              "title": "Scope Task",
+              "type": "coding",
+              "task": "Demonstrate local vs global variable usage.",
+              "expectedOutput": "Local x: 10\nGlobal x: 5"
+            },
+            {
+              "id": 2205,
+              "title": "Quiz: Scope",
+              "type": "quiz",
+              "questions": [
+                "What is local scope?",
+                "How to access global variable?",
+                "What does the global keyword do?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 204,
+          "title": "Lambda Functions",
+          "description": "Create anonymous functions",
+          "lessons": [
+            {
+              "id": 2301,
+              "title": "Lambda Syntax",
+              "type": "lesson",
+              "content": [
+                { "title": "Single-line", "description": "lambda x: x + 1", "image": null }
+              ]
+            },
+            {
+              "id": 2302,
+              "title": "Use Cases",
+              "type": "lesson",
+              "content": [
+                { "title": "Short Functions", "description": "Used in sort, map", "image": null }
+              ]
+            },
+            {
+              "id": 2303,
+              "title": "With map()",
+              "type": "lesson",
+              "content": [
+                { "title": "Apply Function", "description": "map(lambda x: ..., list)", "image": null }
+              ]
+            },
+            {
+              "id": 2304,
+              "title": "Lambda Task",
+              "type": "coding",
+              "task": "Use lambda to square all numbers in a list.",
+              "expectedOutput": "[1, 4, 9]"
+            },
+            {
+              "id": 2305,
+              "title": "Quiz: Lambda",
+              "type": "quiz",
+              "questions": [
+                "What is lambda used for?",
+                "Can lambda have multiple lines?",
+                "How to use lambda with map?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 205,
+          "title": "Recursion",
+          "description": "Functions that call themselves",
+          "lessons": [
+            {
+              "id": 2401,
+              "title": "What is Recursion?",
+              "type": "lesson",
+              "content": [
+                { "title": "Self-Call", "description": "Function calls itself", "image": null }
+              ]
+            },
+            {
+              "id": 2402,
+              "title": "Base Case",
+              "type": "lesson",
+              "content": [
+                { "title": "Stopping Condition", "description": "Prevent infinite loop", "image": null }
+              ]
+            },
+            {
+              "id": 2403,
+              "title": "Recursive Example",
+              "type": "lesson",
+              "content": [
+                { "title": "Factorial", "description": "Classic recursive problem", "image": null }
+              ]
+            },
+            {
+              "id": 2404,
+              "title": "Recursion Task",
+              "type": "coding",
+              "task": "Write a recursive function to calculate factorial.",
+              "expectedOutput": "120"
+            },
+            {
+              "id": 2405,
+              "title": "Quiz: Recursion",
+              "type": "quiz",
+              "questions": [
+                "What is a base case?",
+                "What happens without a base case?",
+                "Example of recursion?"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Python Classes",
+      "description": "Learn object-oriented programming in Python.",
+      "image": "/images/python-classes.png",
+      "topics": [
+        {
+          "id": 301,
+          "title": "Class Basics",
+          "description": "Understand classes and objects",
+          "lessons": [
+            {
+              "id": 3001,
+              "title": "What is a Class?",
+              "type": "lesson",
+              "content": [
+                { "title": "Definition", "description": "Blueprint for objects", "image": null }
+              ]
+            },
+            {
+              "id": 3002,
+              "title": "Creating Objects",
+              "type": "lesson",
+              "content": [
+                { "title": "Instantiation", "description": "object = ClassName()", "image": null }
+              ]
+            },
+            {
+              "id": 3003,
+              "title": "Instance Variables",
+              "type": "lesson",
+              "content": [
+                { "title": "Self Usage", "description": "Access instance attributes", "image": null }
+              ]
+            },
+            {
+              "id": 3004,
+              "title": "Class Task",
+              "type": "coding",
+              "task": "Create a class Person with name and age attributes.",
+              "expectedOutput": "Name: Alice, Age: 30"
+            },
+            {
+              "id": 3005,
+              "title": "Quiz: Class Basics",
+              "type": "quiz",
+              "questions": [
+                "What is a class?",
+                "How do you create an object?",
+                "What is self?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 302,
+          "title": "Methods and Constructors",
+          "description": "Understand functions inside classes",
+          "lessons": [
+            {
+              "id": 3101,
+              "title": "Instance Methods",
+              "type": "lesson",
+              "content": [
+                { "title": "Inside Class", "description": "Use self", "image": null }
+              ]
+            },
+            {
+              "id": 3102,
+              "title": "__init__ Constructor",
+              "type": "lesson",
+              "content": [
+                { "title": "Initialization", "description": "Special method", "image": null }
+              ]
+            },
+            {
+              "id": 3103,
+              "title": "Default Values",
+              "type": "lesson",
+              "content": [
+                { "title": "Flexible Constructor", "description": "Set default arguments", "image": null }
+              ]
+            },
+            {
+              "id": 3104,
+              "title": "Constructor Task",
+              "type": "coding",
+              "task": "Add a constructor to the Person class.",
+              "expectedOutput": "Hello, Alice"
+            },
+            {
+              "id": 3105,
+              "title": "Quiz: Methods",
+              "type": "quiz",
+              "questions": [
+                "What is __init__?",
+                "How do you define a method?",
+                "What is self used for?"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
