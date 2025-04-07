@@ -6,7 +6,8 @@ import {
   HomeOutlined, 
   BookOutlined, 
   TrophyOutlined, 
-  TeamOutlined,
+  AimOutlined,
+  CodeOutlined,
   SettingOutlined,
   QuestionCircleOutlined,
   FireOutlined
@@ -22,12 +23,12 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
   const menuItems = [
     { key: '/dashboard', icon: <HomeOutlined />, label: 'Dashboard', path: '/dashboard' },
     { key: '/courses', icon: <BookOutlined />, label: 'Courses', path: '/courses' },
+    { key: '/games', icon: <AimOutlined />, label: 'Games', path: '/games' },
+    { key: '/compiler', icon: <CodeOutlined />, label: 'Compiler', path: '/compiler' },
     { key: '/leaderboard', icon: <TrophyOutlined />, label: 'Leaderboard', path: '/leaderboard' },
-    { key: '/friends', icon: <TeamOutlined />, label: 'Friends', path: '/friends' },
-    { key: '/settings', icon: <SettingOutlined />, label: 'Settings', path: '/settings' },
-    { key: '/help', icon: <QuestionCircleOutlined />, label: 'Help', path: '/help' },
+    // Remove Friends and Settings as requested
   ];
-  
+
   const selectedKeys = menuItems
     .filter(item => location.pathname.startsWith(item.key))
     .map(item => item.key);
