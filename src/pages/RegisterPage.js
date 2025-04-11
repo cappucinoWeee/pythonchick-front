@@ -1,5 +1,5 @@
 // src/pages/RegisterPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Form, 
@@ -13,7 +13,8 @@ import {
   Col, 
   Checkbox,
   Divider,
-  Select
+  Select,
+  message
 } from 'antd';
 import { 
   UserOutlined, 
@@ -27,17 +28,26 @@ import {
   CheckCircleFilled
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 const { Step } = Steps;
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
 const RegisterPage = () => {
+  const { register, isAuthenticated, loading } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [formData, setFormData] = useState({});
+  const [error, setError] = useState('');
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+  
+  // Check if user is already logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
   
   const steps = [
     {
@@ -54,23 +64,50 @@ const RegisterPage = () => {
     }
   ];
   
+  // Handle step 1 form submission
   const onFinishStep1 = (values) => {
+    // Check if passwords match
+    if (values.password !== values.confirmPassword) {
+      setError('Passwords do not match!');
+      return;
+    }
+    
     setFormData({ ...formData, ...values });
     setCurrentStep(1);
+    setError('');
   };
   
-  const onFinishStep2 = (values) => {
-    setLoading(true);
-    setError('');
-    
-    // Combine data from both steps
-    const completeData = { ...formData, ...values };
-    
-    // Simulate registration - in a real app, this would call an API
-    setTimeout(() => {
-      setLoading(false);
+  // Handle step 2 form submission
+  const onFinishStep2 = async (values) => {
+    try {
+      setError('');
+      
+      // Combine data from both steps
+      const completeData = { 
+        ...formData, 
+        ...values,
+        // Remove confirmPassword as it's not needed by API
+        confirmPassword: undefined
+      };
+      
+      // Register user
+      await register(completeData);
+      
+      // Show success message
+      message.success('Registration successful! You can now log in.');
+      
+      // Move to completion step
       setCurrentStep(2);
-    }, 1500);
+    } catch (err) {
+      console.error('Registration error:', err);
+      
+      // Handle different error types
+      if (err.response && err.response.data) {
+        setError(err.response.data.detail || 'Registration failed. Please check your information.');
+      } else {
+        setError('Registration failed. Please try again later.');
+      }
+    }
   };
   
   const goToLogin = () => {
@@ -110,6 +147,8 @@ const RegisterPage = () => {
                 type="error"
                 showIcon
                 className="mb-4"
+                closable
+                onClose={() => setError('')}
               />
             )}
             
@@ -117,10 +156,34 @@ const RegisterPage = () => {
               <>
                 <Form
                   name="register-step1"
-                  initialValues={{ remember: true }}
+                  form={form}
+                  initialValues={{ 
+                    ...formData,
+                    agreement: formData.agreement || true 
+                  }}
                   onFinish={onFinishStep1}
                   layout="vertical"
                 >
+                  <Form.Item
+                    name="username"
+                    label="Username"
+                    rules={[
+                      { required: true, message: 'Please enter a username!' },
+                      { min: 3, message: 'Username must be at least 3 characters!' },
+                      { 
+                        pattern: /^[a-zA-Z0-9_]+$/, 
+                        message: 'Username can only contain letters, numbers, and underscores!' 
+                      }
+                    ]}
+                  >
+                    <Input 
+                      prefix={<UserOutlined className="text-gray-400" />} 
+                      placeholder="Username"
+                      size="large"
+                      className="rounded-lg"
+                    />
+                  </Form.Item>
+                  
                   <Form.Item
                     name="email"
                     label="Email"
@@ -164,7 +227,7 @@ const RegisterPage = () => {
                           if (!value || getFieldValue('password') === value) {
                             return Promise.resolve();
                           }
-                          return Promise.reject(new Error('Passwords do not match!'));
+                          return Promise.reject(new Error('The two passwords do not match!'));
                         },
                       }),
                     ]}
@@ -236,36 +299,22 @@ const RegisterPage = () => {
             {currentStep === 1 && (
               <Form
                 name="register-step2"
+                initialValues={{
+                  ...formData
+                }}
                 onFinish={onFinishStep2}
                 layout="vertical"
               >
                 <Row gutter={16}>
                   <Col span={24}>
                     <Form.Item
-                      name="name"
+                      name="full_name"
                       label="Full Name"
                       rules={[{ required: true, message: 'Please enter your name!' }]}
                     >
                       <Input 
                         prefix={<UserOutlined className="text-gray-400" />} 
                         placeholder="Full Name"
-                        size="large"
-                        className="rounded-lg"
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                
-                <Row gutter={16}>
-                  <Col span={24}>
-                    <Form.Item
-                      name="username"
-                      label="Username"
-                      rules={[{ required: true, message: 'Please choose a username!' }]}
-                    >
-                      <Input 
-                        prefix={<UserOutlined className="text-gray-400" />} 
-                        placeholder="Username"
                         size="large"
                         className="rounded-lg"
                       />

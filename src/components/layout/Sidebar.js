@@ -1,34 +1,54 @@
 // src/components/layout/Sidebar.js
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Layout, Menu, Avatar, Progress, Divider } from 'antd';
+import { Layout, Menu, Avatar, Progress, Typography } from 'antd';
 import { 
   HomeOutlined, 
   BookOutlined, 
   TrophyOutlined, 
-  AimOutlined,
   CodeOutlined,
   SettingOutlined,
-  QuestionCircleOutlined,
+  UserOutlined,
   FireOutlined
 } from '@ant-design/icons';
-import { useAppContext } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 const { Sider } = Layout;
+const { Text } = Typography;
 
 const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
   const location = useLocation();
-  const { user } = useAppContext();
+  const { user } = useAuth();
   
+  // Menu items
   const menuItems = [
-    { key: '/dashboard', icon: <HomeOutlined />, label: 'Dashboard', path: '/dashboard' },
-    { key: '/courses', icon: <BookOutlined />, label: 'Courses', path: '/courses' },
-    { key: '/games', icon: <AimOutlined />, label: 'Games', path: '/games' },
-    { key: '/compiler', icon: <CodeOutlined />, label: 'Compiler', path: '/compiler' },
-    { key: '/leaderboard', icon: <TrophyOutlined />, label: 'Leaderboard', path: '/leaderboard' },
-    // Remove Friends and Settings as requested
+    { 
+      key: '/dashboard', 
+      icon: <HomeOutlined />, 
+      label: <Link to="/dashboard">Dashboard</Link>,
+      path: '/dashboard' 
+    },
+    { 
+      key: '/courses', 
+      icon: <BookOutlined />, 
+      label: <Link to="/courses">Courses</Link>,
+      path: '/courses' 
+    },
+    { 
+      key: '/compiler', 
+      icon: <CodeOutlined />, 
+      label: <Link to="/compiler">Compiler</Link>,
+      path: '/compiler' 
+    },
+    { 
+      key: '/leaderboard', 
+      icon: <TrophyOutlined />, 
+      label: <Link to="/leaderboard">Leaderboard</Link>,
+      path: '/leaderboard' 
+    },
   ];
 
+  // Determine which menu items should be selected based on current path
   const selectedKeys = menuItems
     .filter(item => location.pathname.startsWith(item.key))
     .map(item => item.key);
@@ -40,16 +60,17 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
         {!collapsed && (
           <div className="flex items-center space-x-3">
             <Avatar 
-              src={user.avatar || "/default-avatar.png"} 
+              src={user?.avatar} 
               alt="Profile" 
               className="h-12 w-12 object-cover border-2 border-primary"
+              icon={<UserOutlined />}
               size={48}
             />
             <div>
-              <h3 className="font-medium truncate">{user.name}</h3>
+              <h3 className="font-medium truncate">{user?.name || 'User'}</h3>
               <div className="flex items-center">
                 <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
-                  Level {user.level}
+                  Level {user?.level || 1}
                 </span>
               </div>
             </div>
@@ -59,13 +80,14 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
         {collapsed && (
           <div className="flex flex-col items-center justify-center">
             <Avatar 
-              src={user.avatar || "/default-avatar.png"} 
+              src={user?.avatar} 
               alt="Profile" 
               className="border-2 border-primary mb-2"
+              icon={<UserOutlined />}
               size={40}
             />
             <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
-              Lvl {user.level}
+              Lvl {user?.level || 1}
             </span>
           </div>
         )}
@@ -74,12 +96,12 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
           <div className="mt-3 bg-gray-100 rounded-lg p-2">
             <div className="text-xs text-gray-600 mb-1">Experience</div>
             <Progress 
-              percent={(user.experience % 100)} 
+              percent={(user?.experience % 100) || 0} 
               showInfo={false}
               strokeColor="#FF8C00"
               size="small"
             />
-            <div className="text-xs text-right mt-1">{user.experience} XP</div>
+            <div className="text-xs text-right mt-1">{user?.experience || 0} XP</div>
           </div>
         )}
       </div>
@@ -89,11 +111,7 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
         mode="inline"
         theme="light"
         selectedKeys={selectedKeys}
-        items={menuItems.map(item => ({
-          key: item.key,
-          icon: item.icon,
-          label: <Link to={item.path}>{item.label}</Link>
-        }))}
+        items={menuItems}
       />
       
       {!collapsed && (
@@ -104,7 +122,7 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
               <span className="text-sm">Daily Streak</span>
             </div>
             <div className="bg-yellow-100 text-yellow-800 font-medium text-xs px-2 py-1 rounded-full">
-              {user.streak} 🔥
+              {user?.streak || 0} 🔥
             </div>
           </div>
         </div>
@@ -125,8 +143,13 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
       collapsible
       collapsed={collapsed}
       trigger={null}
-      className={`shadow-md transition-all duration-300 ${className} mt-6 ml-6 rounded-lg`}
-      style={{ height: '100%' }}
+      className={`shadow-md transition-all duration-300 ${className}`}
+      style={{ 
+        height: 'calc(100vh - 64px)',
+        position: 'sticky',
+        top: '64px',
+        left: 0
+      }}
     >
       {sidebarContent}
     </Sider>

@@ -47,15 +47,15 @@ const DashboardStats = () => {
                   <span>Current Level</span>
                 </div>
               }
-              value={user.level}
+              value={user?.level}
               valueStyle={{ color: '#FF8C00', fontWeight: 600 }}
               prefix={<StarOutlined className="mr-1" />}
               className="mb-2"
             />
             
-            <Tooltip title={`${user.experience % 100}/100 XP to Level ${user.level + 1}`}>
+            <Tooltip title={`${user?.experience % 100}/100 XP to Level ${user?.level + 1}`}>
               <Progress 
-                percent={(user.experience % 100)} 
+                percent={(user?.experience % 100)} 
                 showInfo={false}
                 strokeColor="#FF8C00"
                 className="mt-2"
@@ -64,8 +64,8 @@ const DashboardStats = () => {
             </Tooltip>
             
             <div className="text-xs text-gray-500 mt-1 flex justify-between">
-              <span>Total XP: {user.experience}</span>
-              <span>{100 - (user.experience % 100)} XP to go</span>
+              <span>Total XP: {user?.experience}</span>
+              <span>{100 - (user?.experience % 100)} XP to go</span>
             </div>
           </Card>
         </motion.div>
@@ -86,7 +86,7 @@ const DashboardStats = () => {
                   <span>Streak</span>
                 </div>
               }
-              value={user.streak}
+              value={user?.streak}
               valueStyle={{ color: '#FF4D4F', fontWeight: 600 }}
               suffix="days"
               className="mb-2"
@@ -96,10 +96,10 @@ const DashboardStats = () => {
               {[...Array(7)].map((_, i) => (
                 <div key={i} className="flex-1 px-0.5">
                   <div 
-                    className={`h-1 rounded-full ${i < user.streak % 7 ? 'bg-red-500' : 'bg-gray-200'}`}
+                    className={`h-1 rounded-full ${i < user?.streak % 7 ? 'bg-red-500' : 'bg-gray-200'}`}
                   />
                   <div 
-                    className={`w-full text-center mt-1 text-xs ${i < user.streak % 7 ? 'text-red-500' : 'text-gray-400'}`}
+                    className={`w-full text-center mt-1 text-xs ${i < user?.streak % 7 ? 'text-red-500' : 'text-gray-400'}`}
                   >
                     {['M','T','W','T','F','S','S'][i]}
                   </div>

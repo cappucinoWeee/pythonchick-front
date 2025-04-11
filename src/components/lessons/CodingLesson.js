@@ -1,6 +1,6 @@
-// src/components/lessons/CodingLesson.js - Update this file
-import React, { useState } from 'react';
-import { Card, Button, Alert, Space, Typography, Tooltip, Row, Col, Badge } from 'antd';
+// src/components/lessons/CodingLesson.js
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Alert, Space, Typography, Tooltip, Row, Col, Badge, Spin } from 'antd';
 import { 
   CheckOutlined, 
   ArrowRightOutlined,
@@ -8,61 +8,113 @@ import {
   BulbOutlined,
   QuestionOutlined,
   FileTextOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
-import { useAppContext } from '../../context/AppContext';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
 import CodeCompiler from '../compiler/CodeCompiler';
 
 const { Title, Text, Paragraph } = Typography;
 
-// Sample coding lesson data
-const sampleCodingLesson = {
-  instructions: `
-    # Your First Python Program
-    
-    Let's write a simple Python program that prints a greeting.
-    
-    ## Task:
-    
-    1. Create a variable called \`name\` and assign your name to it
-    2. Use the \`print()\` function to output: "Hello, [your name]!"
-    
-    ## Example:
-    
-    \`\`\`python
-    name = "Alex"
-    print("Hello, " + name + "!")
-    \`\`\`
-    
-    Output:
-    \`\`\`
-    Hello, Alex!
-    \`\`\`
-  `,
-  initialCode: `# Type your code here
-name = ""
-# Print your greeting
-`,
-  solution: `name = "Pythonchick"
-print("Hello, " + name + "!")`,
-  expectedOutput: "Hello, Pythonchick!",
-  hints: [
-    "Make sure to put your name in quotes as it's a string",
-    "You can combine strings using the + operator",
-    "Don't forget the exclamation mark at the end"
-  ]
-};
-
 const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [currentHint, setCurrentHint] = useState(0);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(lesson.is_completed || false);
   const [showHint, setShowHint] = useState(false);
-  const { completeLesson } = useAppContext();
+  const [currentHint, setCurrentHint] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [initialCode, setInitialCode] = useState('# Type your code here\n');
+  const [taskDescription, setTaskDescription] = useState('');
+  const [expectedOutput, setExpectedOutput] = useState('');
+  const [hints, setHints] = useState([]);
+  
+  useEffect(() => {
+    // Update completion status when lesson prop changes
+    setIsCompleted(lesson.is_completed || false);
+    
+    // Process the lesson data
+    const processLessonData = async () => {
+      setLoading(true);
+      
+      try {
+        // Set task description if available
+        if (lesson.task) {
+          setTaskDescription(lesson.task);
+        } else {
+          setTaskDescription(`
+# Coding Challenge: ${lesson.title}
+
+Write Python code to solve the following challenge:
+
+Write a simple "Hello, World!" program that prints a greeting message.
+          `);
+        }
+        
+        // Set expected output if available
+        if (lesson.expected_output) {
+          setExpectedOutput(lesson.expected_output);
+        } else {
+          setExpectedOutput("Hello, World!");
+        }
+        
+        // Set initial code if available
+        if (lesson.initial_code) {
+          setInitialCode(lesson.initial_code);
+        } else {
+          setInitialCode('# Write your code here\n\n# Print a greeting message\n');
+        }
+        
+        // Set hints if available
+        if (lesson.hints && Array.isArray(lesson.hints)) {
+          setHints(lesson.hints);
+        } else {
+          setHints([
+            "Remember to use the print() function to display output",
+            "Your output should match the expected output exactly",
+            "Pay attention to spacing and punctuation"
+          ]);
+        }
+      } catch (error) {
+        console.error('Error processing lesson data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    processLessonData();
+  }, [lesson]);
+  
+  const handleSuccess = async (code) => {
+    setIsCompleting(true);
+    try {
+      // Call the onComplete function passed from parent
+      await onComplete();
+      setIsCompleted(true);
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+  
+  const handleMarkAsCompleted = async () => {
+    setIsCompleting(true);
+    try {
+      // Call the onComplete function passed from parent
+      await onComplete();
+      setIsCompleted(true);
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+  
+  const handleNextLesson = () => {
+    onNextLesson && onNextLesson();
+  };
   
   const getNextHint = () => {
-    if (currentHint < sampleCodingLesson.hints.length - 1) {
+    if (currentHint < hints.length - 1) {
       setCurrentHint(currentHint + 1);
     } else {
       setCurrentHint(0);
@@ -70,21 +122,15 @@ const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
     setShowHint(true);
   };
   
-  const handleSuccess = (code) => {
-    setIsCorrect(true);
-    setIsSubmitted(true);
-    completeLesson(course.id, topic.id, lesson.id);
-  };
-  
-  const handleMarkAsCompleted = () => {
-    completeLesson(course.id, topic.id, lesson.id);
-    setIsCorrect(true);
-    setIsSubmitted(true);
-  };
-  
-  const handleNextLesson = () => {
-    onNextLesson && onNextLesson();
-  };
+  if (loading) {
+    return (
+      <Card className="shadow-card">
+        <div className="flex justify-center py-8">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        </div>
+      </Card>
+    );
+  }
   
   return (
     <div className="coding-lesson">
@@ -100,13 +146,13 @@ const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
             }
           >
             <div className="p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto">
-              <ReactMarkdown>{sampleCodingLesson.instructions}</ReactMarkdown>
+              <ReactMarkdown>{taskDescription}</ReactMarkdown>
             </div>
             
-            {showHint && (
+            {showHint && hints.length > 0 && (
               <Alert
                 message="Hint"
-                description={sampleCodingLesson.hints[currentHint]}
+                description={hints[currentHint]}
                 type="info"
                 showIcon
                 icon={<BulbOutlined />}
@@ -121,7 +167,7 @@ const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
               />
             )}
             
-            {!showHint && (
+            {!showHint && hints.length > 0 && (
               <div className="mt-4 text-center">
                 <Button 
                   type="dashed" 
@@ -137,63 +183,35 @@ const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
         
         <Col xs={24} lg={12}>
           <CodeCompiler 
-            initialCode={sampleCodingLesson.initialCode}
-            expectedOutput={sampleCodingLesson.expectedOutput}
+            initialCode={initialCode}
+            expectedOutput={expectedOutput}
             onSuccess={handleSuccess}
+            readOnly={isCompleted}
           />
         </Col>
       </Row>
       
-      {isSubmitted && (
+      {isCompleted && (
         <Card className="mt-6 shadow-md border-0">
-          {isCorrect ? (
-            <div className="flex items-start">
-              <div className="bg-green-100 p-3 rounded-full mr-4">
-                <CheckOutlined className="text-2xl text-green-500" />
-              </div>
-              <div>
-                <Title level={4} className="text-green-600 mb-1">Great Job!</Title>
-                <Text className="text-gray-600 block mb-2">
-                  Your solution works correctly. You've completed this coding exercise!
-                </Text>
-                <div className="flex items-center">
-                  <Badge count="+15 XP" style={{ backgroundColor: '#52c41a' }} className="mr-3" />
-                  <Text type="secondary">Keep going to earn more experience points!</Text>
-                </div>
+          <div className="flex items-start">
+            <div className="bg-green-100 p-3 rounded-full mr-4">
+              <CheckOutlined className="text-2xl text-green-500" />
+            </div>
+            <div>
+              <Title level={4} className="text-green-600 mb-1">Great Job!</Title>
+              <Text className="text-gray-600 block mb-2">
+                Your solution works correctly. You've completed this coding exercise!
+              </Text>
+              <div className="flex items-center">
+                <Badge count="+15 XP" style={{ backgroundColor: '#52c41a' }} className="mr-3" />
+                <Text type="secondary">Keep going to earn more experience points!</Text>
               </div>
             </div>
-          ) : (
-            <div className="flex items-start">
-              <div className="bg-red-100 p-3 rounded-full mr-4">
-                <QuestionOutlined className="text-2xl text-red-500" />
-              </div>
-              <div>
-                <Title level={4} className="text-red-600 mb-1">Not quite right</Title>
-                <Text className="text-gray-600 block mb-2">
-                  Your code doesn't produce the expected output. Check the hints and try again!
-                </Text>
-                <Space>
-                  <Button 
-                    type="primary" 
-                    onClick={() => setShowHint(true)}
-                    icon={<BulbOutlined />}
-                  >
-                    Show Hint
-                  </Button>
-                  <Button 
-                    type="link"
-                    onClick={handleMarkAsCompleted}
-                  >
-                    Skip & Mark Completed
-                  </Button>
-                </Space>
-              </div>
-            </div>
-          )}
+          </div>
         </Card>
       )}
       
-      {isCorrect && (
+      {isCompleted && (
         <div className="mt-4 text-center">
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -208,6 +226,18 @@ const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
               Next Lesson
             </Button>
           </motion.div>
+        </div>
+      )}
+      
+      {!isCompleted && (
+        <div className="mt-4 text-center">
+          <Button 
+            type="link" 
+            onClick={handleMarkAsCompleted}
+            loading={isCompleting}
+          >
+            Skip & Mark Completed
+          </Button>
         </div>
       )}
     </div>

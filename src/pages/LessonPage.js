@@ -1,7 +1,7 @@
 // src/pages/LessonPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Navigate, Link, useNavigate } from 'react-router-dom';
-import { Breadcrumb, Button, Modal } from 'antd';
+import { Breadcrumb, Button, Modal, Spin, Result, message } from 'antd';
 import { 
   HomeOutlined, 
   BookOutlined, 
@@ -10,19 +10,27 @@ import {
   FileTextOutlined,
   LeftOutlined,
   RightOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import LessonHeader from '../components/lessons/LessonHeader';
 import ContentLesson from '../components/lessons/ContentLesson';
 import CodingLesson from '../components/lessons/CodingLesson';
 import QuizLesson from '../components/lessons/QuizLesson';
-import { useAppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
+import courseService from '../services/courseService';
 
 const LessonPage = () => {
   const { courseId, topicId, lessonId } = useParams();
-  const { courses } = useAppContext();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [course, setCourse] = useState(null);
+  const [topic, setTopic] = useState(null);
+  const [lesson, setLesson] = useState(null);
+  const [lessonIndex, setLessonIndex] = useState(-1);
   const [showExitModal, setShowExitModal] = useState(false);
   
   // Parse IDs as integers
@@ -30,45 +38,67 @@ const LessonPage = () => {
   const topicIdInt = parseInt(topicId);
   const lessonIdInt = parseInt(lessonId);
   
-  // Find course, topic, and lesson
-  const course = courses.find(c => c.id === courseIdInt);
-  if (!course) {
-    return <Navigate to="/courses" replace />;
-  }
-  
-  const topic = course.topics.find(t => t.id === topicIdInt);
-  if (!topic) {
-    return <Navigate to={`/courses/${courseIdInt}`} replace />;
-  }
-  
-  const lessonIndex = topic.lessons.findIndex(l => l.id === lessonIdInt);
-  if (lessonIndex === -1) {
-    return <Navigate to={`/courses/${courseIdInt}/topics/${topicIdInt}`} replace />;
-  }
-  
-  const lesson = topic.lessons[lessonIndex];
+  // Fetch course, topic, and lesson data
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch course details
+        const courseData = await courseService.getCourseById(courseIdInt, user?.id);
+        setCourse(courseData);
+        
+        // Find the topic
+        const topicData = await courseService.getTopicById(topicIdInt, user?.id);
+        setTopic(topicData);
+        
+        // Fetch lesson details
+        const lessonData = await courseService.getLessonById(lessonIdInt, user?.id);
+        setLesson(lessonData);
+        
+        // Find the lesson index in the topic
+        if (topicData && topicData.lessons) {
+          const index = topicData.lessons.findIndex(l => l.id === lessonIdInt);
+          setLessonIndex(index);
+        }
+      } catch (err) {
+        console.error('Error fetching lesson data:', err);
+        setError('Failed to load lesson. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [courseIdInt, topicIdInt, lessonIdInt, user]);
   
   // Check if lesson is locked
   const isLocked = () => {
+    if (!topic || !topic.lessons || lessonIndex === -1) return true;
+    
     // First lesson is always accessible
     if (lessonIndex === 0) return false;
     
     // Otherwise, check if previous lesson is completed
-    return !topic.lessons[lessonIndex - 1].completed;
+    return !topic.lessons[lessonIndex - 1].is_completed;
   };
   
   // Navigate to the next or previous lesson
   const goToNextLesson = () => {
+    if (!topic || !topic.lessons || lessonIndex === -1) return;
+    
     if (lessonIndex < topic.lessons.length - 1) {
       // Navigate to next lesson in same topic
       navigate(`/courses/${courseIdInt}/topics/${topicIdInt}/lessons/${topic.lessons[lessonIndex + 1].id}`);
     } else {
       // Check if there are more topics in this course
-      const topicIndex = course.topics.findIndex(t => t.id === topicIdInt);
-      if (topicIndex < course.topics.length - 1) {
+      const topics = course?.topics || [];
+      const topicIndex = topics.findIndex(t => t.id === topicIdInt);
+      if (topicIndex !== -1 && topicIndex < topics.length - 1) {
         // Navigate to first lesson of next topic
-        const nextTopic = course.topics[topicIndex + 1];
-        if (!nextTopic.locked && nextTopic.lessons.length > 0) {
+        const nextTopic = topics[topicIndex + 1];
+        if (!nextTopic.is_locked && nextTopic.lessons && nextTopic.lessons.length > 0) {
           navigate(`/courses/${courseIdInt}/topics/${nextTopic.id}/lessons/${nextTopic.lessons[0].id}`);
         } else {
           // Next topic is locked or has no lessons, go back to topic page
@@ -82,6 +112,8 @@ const LessonPage = () => {
   };
   
   const goToPreviousLesson = () => {
+    if (!topic || !topic.lessons || lessonIndex === -1) return;
+    
     if (lessonIndex > 0) {
       // Navigate to previous lesson in same topic
       navigate(`/courses/${courseIdInt}/topics/${topicIdInt}/lessons/${topic.lessons[lessonIndex - 1].id}`);
@@ -93,7 +125,7 @@ const LessonPage = () => {
   
   // Handle exit to topic page
   const handleExitLesson = () => {
-    if (!lesson.completed) {
+    if (lesson && !lesson.is_completed) {
       setShowExitModal(true);
     } else {
       navigate(`/courses/${courseIdInt}/topics/${topicIdInt}`);
@@ -108,6 +140,64 @@ const LessonPage = () => {
   const cancelExit = () => {
     setShowExitModal(false);
   };
+  
+  // Handle lesson completion
+  const handleLessonComplete = async (score = null) => {
+    try {
+      const result = await courseService.completeLesson(lessonIdInt, score);
+      
+      // Update the lesson state to reflect completion
+      setLesson(prev => ({
+        ...prev,
+        is_completed: true
+      }));
+      
+      message.success(`Lesson completed! You earned ${result.xp_earned} XP`);
+      
+      // Return the result for any component that needs it
+      return result;
+    } catch (err) {
+      console.error('Error completing lesson:', err);
+      message.error('Failed to mark lesson as complete. Please try again.');
+      return null;
+    }
+  };
+  
+  // Render error state
+  if (error) {
+    return (
+      <Result
+        status="error"
+        title="Failed to load lesson"
+        subTitle={error}
+        extra={[
+          <Button 
+            key="back"
+            onClick={() => navigate(`/courses/${courseIdInt}/topics/${topicIdInt}`)}
+          >
+            Return to Topic
+          </Button>
+        ]}
+      />
+    );
+  }
+  
+  // Render loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin 
+          indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />} 
+          tip="Loading lesson..." 
+        />
+      </div>
+    );
+  }
+  
+  // Redirect if data not found
+  if (!course || !topic || !lesson) {
+    return <Navigate to="/courses" replace />;
+  }
   
   // Render the appropriate lesson component based on type
   const renderLessonContent = () => {
@@ -132,12 +222,36 @@ const LessonPage = () => {
     
     switch (lesson.type) {
       case 'quiz':
-        return <QuizLesson course={course} topic={topic} lesson={lesson} onComplete={goToNextLesson} onNextLesson={goToNextLesson} />;
+        return (
+          <QuizLesson 
+            course={course} 
+            topic={topic} 
+            lesson={lesson} 
+            onComplete={handleLessonComplete}
+            onNextLesson={goToNextLesson} 
+          />
+        );
       case 'coding':
-        return <CodingLesson course={course} topic={topic} lesson={lesson} onComplete={goToNextLesson} onNextLesson={goToNextLesson} />;
+        return (
+          <CodingLesson 
+            course={course} 
+            topic={topic} 
+            lesson={lesson} 
+            onComplete={handleLessonComplete}
+            onNextLesson={goToNextLesson} 
+          />
+        );
       case 'lesson':
       default:
-        return <ContentLesson course={course} topic={topic} lesson={lesson} onComplete={goToNextLesson} onNextLesson={goToNextLesson} />;
+        return (
+          <ContentLesson 
+            course={course} 
+            topic={topic} 
+            lesson={lesson} 
+            onComplete={handleLessonComplete}
+            onNextLesson={goToNextLesson} 
+          />
+        );
     }
   };
   
@@ -193,7 +307,7 @@ const LessonPage = () => {
           <Button 
             type="default" 
             onClick={goToNextLesson}
-            disabled={!lesson.completed}
+            disabled={!lesson.is_completed}
           >
             Next <RightOutlined />
           </Button>

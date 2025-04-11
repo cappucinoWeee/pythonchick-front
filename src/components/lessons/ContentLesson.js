@@ -1,76 +1,99 @@
 // src/components/lessons/ContentLesson.js
-import React, { useState } from 'react';
-import { Card, Button, Alert, Divider } from 'antd';
-import { CheckOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Alert, Divider, Spin, Typography } from 'antd';
+import { CheckOutlined, ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
-import { useAppContext } from '../../context/AppContext';
 
-// Sample lesson content - would come from API in real app
-const sampleContent = `
-# What is Python?
+const { Title, Paragraph, Text } = Typography;
 
-Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation.
+const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(lesson.is_completed || false);
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    // Update completion status when lesson prop changes
+    setIsCompleted(lesson.is_completed || false);
+    
+    // Process the lesson content
+    if (lesson.content) {
+      // If content is an array of objects (from the API)
+      if (Array.isArray(lesson.content)) {
+        const markdownContent = lesson.content.map(item => {
+          return `## ${item.title}\n\n${item.description}\n\n${item.image ? `![${item.title}](${item.image})` : ''}`;
+        }).join('\n\n---\n\n');
+        
+        setContent(markdownContent);
+      } else {
+        // If content is already markdown or plain text
+        setContent(lesson.content);
+      }
+    } else {
+      // Sample content if none is provided
+      setContent(`
+# ${lesson.title}
 
-## Key Features of Python
+This is a placeholder content for this lesson. In a real application, this would be replaced with the actual lesson content from the database.
 
-- **Easy to Learn**: Python has a simple, easy-to-learn syntax that emphasizes readability, reducing the cost of program maintenance.
-- **Easy to Read**: Python code is more clearly defined and visible to the eyes.
-- **Easy to Maintain**: Python's source code is fairly easy to maintain.
-- **Broad Standard Library**: Python's bulk of the library is very portable and cross-platform compatible on UNIX, Windows, and macOS.
-- **Interactive Mode**: Python has support for an interactive mode which allows interactive testing and debugging of snippets of code.
-- **Portable**: Python can run on a wide variety of hardware platforms and has the same interface on all platforms.
-- **Extendable**: You can add low-level modules to the Python interpreter. These modules enable programmers to add to or customize their tools to be more efficient.
-- **Databases**: Python provides interfaces to all major commercial databases.
-- **GUI Programming**: Python supports GUI applications that can be created and ported to many system calls, libraries, and windows systems.
-- **Scalable**: Python provides a better structure and support for large programs than shell scripting.
+## Introduction
 
-## A Simple Example
+Welcome to this lesson! Here you'll learn important concepts about Python programming.
 
-Here's a simple "Hello, World!" program in Python:
+## Key Concepts
+
+- Python is a high-level programming language
+- It's known for its readability and simplicity
+- Python supports multiple programming paradigms
+
+## Example Code
 
 \`\`\`python
+# This is a simple Python program
 print("Hello, World!")
 \`\`\`
 
-When you run this program, it outputs:
+## Practice
 
-\`\`\`
-Hello, World!
-\`\`\`
-
-## Python Applications
-
-Python is used in many areas, including:
-
-- Web Development
-- Data Science
-- Machine Learning
-- Artificial Intelligence
-- Scientific Computing
-- Game Development
-- Desktop Applications
-`;
-
-const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
-  const [isReading, setIsReading] = useState(true);
-  const [isCompleted, setIsCompleted] = useState(lesson.completed);
-  const { completeLesson } = useAppContext();
+Try writing your own Python code to print a message.
+      `);
+    }
+    
+    setLoading(false);
+  }, [lesson]);
   
-  const handleMarkAsCompleted = () => {
-    completeLesson(course.id, topic.id, lesson.id);
-    setIsCompleted(true);
-    onComplete && onComplete();
+  const handleMarkAsCompleted = async () => {
+    setIsCompleting(true);
+    try {
+      // Call the onComplete function passed from parent
+      await onComplete();
+      setIsCompleted(true);
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+    } finally {
+      setIsCompleting(false);
+    }
   };
   
   const handleNextLesson = () => {
     onNextLesson && onNextLesson();
   };
   
+  if (loading) {
+    return (
+      <Card className="shadow-card">
+        <div className="flex justify-center py-8">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        </div>
+      </Card>
+    );
+  }
+  
   return (
     <Card className="shadow-card">
       <div className="lesson-content prose max-w-none">
-        <ReactMarkdown>{sampleContent}</ReactMarkdown>
+        <ReactMarkdown>{content}</ReactMarkdown>
         
         <Divider />
         
@@ -82,10 +105,11 @@ const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
               transition={{ repeat: Infinity, repeatType: "reverse", duration: 1 }}
             >
               <Button 
-                // type="primary" 
+                type="primary" 
                 size="large"
                 icon={<CheckOutlined />}
                 onClick={handleMarkAsCompleted}
+                loading={isCompleting}
               >
                 Mark as Completed
               </Button>
@@ -94,14 +118,14 @@ const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
             <div className="flex flex-col items-center">
               <Alert
                 message="Lesson Completed!"
-                description="Great job completing this lesson. You've earned 10 XP!"
+                description="Great job completing this lesson. You've earned XP!"
                 type="success"
                 showIcon
                 className="mb-4"
               />
               
               <Button 
-                // type="primary" 
+                type="primary" 
                 size="large"
                 icon={<ArrowRightOutlined />}
                 onClick={handleNextLesson}

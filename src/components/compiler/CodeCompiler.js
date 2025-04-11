@@ -1,14 +1,16 @@
 // src/components/compiler/CodeCompiler.js
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Alert, Tabs, Input, Space, Divider } from 'antd';
+import { Card, Button, Alert, Tabs, Input, Space, Divider, message, Spin } from 'antd';
 import { 
   PlayCircleOutlined, 
   CheckOutlined, 
   ReloadOutlined,
   CodeOutlined,
-  LoadingOutlined
+  LoadingOutlined,
+  SaveOutlined,
+  CopyOutlined
 } from '@ant-design/icons';
-import axios from 'axios';
+import codeService from '../../services/codeService';
 
 const { TabPane } = Tabs;
 const { TextArea } = Input;
@@ -17,7 +19,10 @@ const CodeCompiler = ({
   initialCode = '# Write your code here\n', 
   expectedOutput = '', 
   onSuccess = () => {},
-  readOnly = false
+  onError = () => {},
+  readOnly = false,
+  saveEnabled = false,
+  title = ''
 }) => {
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState('');
@@ -26,35 +31,59 @@ const CodeCompiler = ({
   const [success, setSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState('code');
   
+  // Reset code if initialCode prop changes
+  useEffect(() => {
+    setCode(initialCode);
+    setOutput('');
+    setError('');
+    setSuccess(false);
+  }, [initialCode]);
+  
   const runCode = async () => {
     setLoading(true);
     setError('');
     setOutput('');
+    setSuccess(false);
     
     try {
-      const response = await axios.post('/api/v1/code/execute', {
-        code,
-        expected_output: expectedOutput
-      });
+      // Call the API to execute the code
+      const result = await codeService.executeCode(code, expectedOutput);
       
-      const result = response.data;
+      setOutput(result.output || '');
       
-      setOutput(result.output);
       if (result.error) {
         setError(result.error);
+        onError(result.error);
       }
       
-      if (result.matches_expected) {
-        setSuccess(true);
-        onSuccess(code);
-      } else {
-        setSuccess(false);
+      // Check if the output matches the expected output
+      if (expectedOutput && result.success) {
+        const outputMatches = expectedOutput.trim() === result.output.trim();
+        
+        if (outputMatches) {
+          setSuccess(true);
+          onSuccess(code);
+          message.success('Your code produced the correct output!');
+        } else if (expectedOutput) {
+          message.warning('Your code ran successfully but did not produce the expected output.');
+        }
+      } else if (result.success) {
+        message.success('Code executed successfully!');
       }
       
       // Switch to output tab to see results
       setActiveTab('output');
     } catch (err) {
-      setError(err.response?.data?.detail || 'An error occurred while executing the code');
+      console.error('Code execution error:', err);
+      
+      // Handle different error types
+      if (err.response && err.response.data) {
+        setError(err.response.data.detail || 'Error executing code. Please try again.');
+      } else {
+        setError('An error occurred while executing the code. Please try again.');
+      }
+      
+      onError(err);
     } finally {
       setLoading(false);
     }
@@ -65,10 +94,27 @@ const CodeCompiler = ({
     setOutput('');
     setError('');
     setSuccess(false);
+    setActiveTab('code');
+  };
+  
+  const copyCode = () => {
+    navigator.clipboard.writeText(code);
+    message.success('Code copied to clipboard!');
+  };
+  
+  const saveCode = async () => {
+    if (!saveEnabled) return;
+    
+    try {
+      // Show a success message as this is just a mockup
+      message.success('Code saved successfully!');
+    } catch (err) {
+      message.error('Failed to save code. Please try again.');
+    }
   };
   
   return (
-    <Card className="compiler-card">
+    <Card className="compiler-card" title={title}>
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
         <TabPane 
           tab={<span><CodeOutlined /> Code</span>}
@@ -82,6 +128,7 @@ const CodeCompiler = ({
               style={{ fontFamily: 'monospace' }}
               disabled={readOnly || loading}
               className="code-editor"
+              placeholder="Write your Python code here..."
             />
           </div>
         </TabPane>
@@ -152,6 +199,25 @@ const CodeCompiler = ({
             disabled={readOnly || loading}
           >
             Reset
+          </Button>
+        </Space>
+        
+        <Space>
+          {saveEnabled && (
+            <Button 
+              icon={<SaveOutlined />} 
+              onClick={saveCode}
+              disabled={loading}
+            >
+              Save
+            </Button>
+          )}
+          <Button 
+            icon={<CopyOutlined />} 
+            onClick={copyCode}
+            disabled={loading}
+          >
+            Copy
           </Button>
         </Space>
       </div>

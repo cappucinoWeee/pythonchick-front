@@ -1,6 +1,6 @@
 // src/pages/LoginPage.js
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Form, 
   Input, 
@@ -12,7 +12,8 @@ import {
   Row, 
   Col, 
   Divider, 
-  Space 
+  Space,
+  message
 } from 'antd';
 import { 
   UserOutlined, 
@@ -23,23 +24,52 @@ import {
   MailOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 const { Title, Text, Paragraph } = Typography;
 
 const LoginPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { login, isAuthenticated, loading, error } = useAuth();
+  const [form] = Form.useForm();
+  const [localError, setLocalError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   
-  const onFinish = (values) => {
-    setLoading(true);
-    setError('');
-    
-    // Simulate login - in a real app, this would call an API
-    setTimeout(() => {
-      setLoading(false);
+  // Check if user is already logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      // Redirect to the page they were trying to access, or dashboard
+      const from = location.state?.from || '/dashboard';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
+  
+  const onFinish = async (values) => {
+    try {
+      setLocalError('');
+      
+      // Credentials for API
+      const credentials = {
+        username: values.username || values.email,
+        password: values.password
+      };
+      
+      await login(credentials);
+      
+      message.success('Login successful!');
+      
+      // Redirect to dashboard after successful login
       navigate('/dashboard');
-    }, 1500);
+    } catch (err) {
+      console.error('Login error:', err);
+      
+      // Handle different error types
+      if (err.response && err.response.data) {
+        setLocalError(err.response.data.detail || 'Login failed. Please check your credentials.');
+      } else {
+        setLocalError('Login failed. Please try again later.');
+      }
+    }
   };
   
   return (
@@ -120,33 +150,36 @@ const LoginPage = () => {
                   <Text className="text-gray-600">Log in to continue your coding adventure</Text>
                 </div>
                 
-                {error && (
+                {(localError || error) && (
                   <Alert
-                    message={error}
+                    message={localError || (typeof error === 'string' ? error : 'Authentication error')}
                     type="error"
                     showIcon
                     className="mb-4"
+                    closable
+                    onClose={() => setLocalError('')}
                   />
                 )}
                 
                 <Form
                   name="login"
+                  form={form}
                   initialValues={{ remember: true }}
                   onFinish={onFinish}
                   layout="vertical"
                 >
                   <Form.Item
-                    name="email"
+                    name="username"
                     rules={[
-                      { required: true, message: 'Please enter your email!' },
-                      { type: 'email', message: 'Please enter a valid email!' }
+                      { required: true, message: 'Please enter your username!' }
                     ]}
                   >
                     <Input 
-                      prefix={<MailOutlined className="text-gray-400" />} 
-                      placeholder="Email"
+                      prefix={<UserOutlined className="text-gray-400" />} 
+                      placeholder="Username"
                       size="large"
                       className="rounded-lg"
+                      disabled={loading}
                     />
                   </Form.Item>
                   
@@ -159,12 +192,13 @@ const LoginPage = () => {
                       placeholder="Password"
                       size="large"
                       className="rounded-lg"
+                      disabled={loading}
                     />
                   </Form.Item>
                   
                   <Form.Item>
                     <div className="flex justify-between items-center">
-                      <Checkbox name="remember">Remember me</Checkbox>
+                      <Checkbox name="remember" disabled={loading}>Remember me</Checkbox>
                       <Link to="/forgot" className="text-primary hover:text-primary-dark">
                         Forgot password?
                       </Link>
@@ -173,8 +207,8 @@ const LoginPage = () => {
                   
                   <Form.Item>
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={!loading ? { scale: 1.02 } : {}}
+                      whileTap={!loading ? { scale: 0.98 } : {}}
                     >
                       <Button 
                         type="primary"
@@ -200,18 +234,21 @@ const LoginPage = () => {
                       icon={<GoogleOutlined />} 
                       size="large"
                       className="flex items-center justify-center"
+                      disabled={loading}
                     />
                     <Button 
                       shape="circle" 
                       icon={<FacebookOutlined />} 
                       size="large"
                       className="flex items-center justify-center"
+                      disabled={loading}
                     />
                     <Button 
                       shape="circle" 
                       icon={<GithubOutlined />} 
                       size="large"
                       className="flex items-center justify-center"
+                      disabled={loading}
                     />
                   </div>
                 </Form>

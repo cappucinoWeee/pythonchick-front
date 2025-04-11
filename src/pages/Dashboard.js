@@ -39,7 +39,7 @@ const Dashboard = () => {
           <Row gutter={[24, 24]} className="relative z-10">
             <Col xs={24} md={16} className="py-4">
               <div>
-                <Title level={2} className="font-display mb-2">Welcome back, {user.name}!</Title>
+                <Title level={2} className="font-display mb-2">Welcome back, {user?.name}!</Title>
                 <Paragraph className="text-gray-600 text-lg mb-4">
                   Continue your Python learning adventure today
                 </Paragraph>

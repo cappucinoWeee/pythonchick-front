@@ -38,10 +38,23 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Clear token and redirect to login
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
+    
+    // Handle 400 Bad Request (validation errors)
+    if (error.response && error.response.status === 400) {
+      console.error('Validation Error:', error.response.data);
+    }
+    
+    // Handle 500 Internal Server Error
+    if (error.response && error.response.status === 500) {
+      console.error('Server Error:', error.response.data);
+    }
+    
     return Promise.reject(error);
   }
 );
 
+// Export the API client
 export default apiClient;
