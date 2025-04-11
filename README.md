@@ -1,1 +1,1 @@
-Adina and Zhannur chort
+WHY DID U REDEEM THAT <3
