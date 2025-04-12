@@ -34,6 +34,7 @@ import CompilerPage from './pages/CompilerPage';
 import { AppProvider } from './context/AppContext';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import LandingPage from './pages/LandingPage';
 
 // Custom theme configuration for Ant Design
 const theme = {
@@ -61,6 +62,7 @@ function App() {
           <Router>
             <Routes>
               {/* Public routes */}
+              <Route path="/landing" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/logout" element={<LogoutPage />} />
@@ -70,7 +72,7 @@ function App() {
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/support" element={<SupportPage />} />
-
+              
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>

@@ -1,65 +1,48 @@
 // src/pages/LogoutPage.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Result, Spin, Button, Typography } from 'antd';
+import { Result, Spin, Button } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
-import { useAppContext } from '../context/AppContext';
-
-const { Paragraph } = Typography;
+import { useAuth } from '../context/AuthContext';
 
 const LogoutPage = () => {
-  const [isLoggingOut, setIsLoggingOut] = useState(true);
   const navigate = useNavigate();
-  const { resetProgress } = useAppContext();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    // Simulate logout process
-    const logout = async () => {
+    // Perform logout and redirect
+    const performLogout = async () => {
       try {
-        // In a real app, you would make an API call to invalidate the session
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Call logout method from AuthContext
+        logout();
         
-        // Reset user state
-        resetProgress();
-        
-        // Update UI state
-        setIsLoggingOut(false);
-        
-        // Redirect after a short delay
+        // Redirect to landing page after a short delay
         setTimeout(() => {
-          navigate('/login');
+          navigate('/');
         }, 1000);
       } catch (error) {
         console.error('Logout failed:', error);
-        setIsLoggingOut(false);
+        // Even if logout fails, navigate to landing page
+        navigate('/');
       }
     };
     
-    logout();
-  }, [navigate, resetProgress]);
-
-  if (isLoggingOut) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <Spin size="large" />
-        <Paragraph className="mt-4">Logging you out...</Paragraph>
-      </div>
-    );
-  }
+    performLogout();
+  }, [logout, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Result
         icon={<LogoutOutlined />}
         title="You've been logged out"
-        subTitle="Thank you for using Pythonchick. You have been successfully logged out."
+        subTitle="Thank you for using Pythonchick. We hope to see you again soon!"
         extra={
           <Button 
             type="primary" 
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/')}
             style={{ backgroundColor: '#FF8C00', borderColor: '#FF8C00' }}
           >
-            Log In Again
+            Go to Home
           </Button>
         }
       />
