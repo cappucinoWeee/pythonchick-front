@@ -9,8 +9,8 @@ import {
   Steps, 
   Typography, 
   Alert, 
-  Result,
-  Divider
+  Divider,
+  message
 } from 'antd';
 import { 
   MailOutlined, 
@@ -20,6 +20,7 @@ import {
   ArrowLeftOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import authService from '../services/authService';
 
 const { Step } = Steps;
 const { Title, Text, Paragraph } = Typography;
@@ -28,44 +29,64 @@ const ForgotPasswordPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
-  const [resetRequested, setResetRequested] = useState(false);
-  const [verificationComplete, setVerificationComplete] = useState(false);
+  const [token, setToken] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [form] = Form.useForm();
 
   // Step 1: Request password reset
-  const handleRequestReset = (values) => {
+  const handleRequestReset = async (values) => {
     setLoading(true);
     setEmail(values.email);
+    setError('');
     
-    // Simulate API call to request password reset
-    setTimeout(() => {
-      setLoading(false);
-      setResetRequested(true);
+    try {
+      // Call API to request password reset
+      await authService.requestPasswordReset(values.email);
+      message.success('Password reset email sent successfully!');
       setCurrentStep(1);
-    }, 1500);
+    } catch (err) {
+      setError('Failed to send reset email. Please try again.');
+      console.error('Error requesting password reset:', err);
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Step 2: Verify code
-  const handleVerifyCode = (values) => {
+  const handleVerifyCode = async (values) => {
     setLoading(true);
+    setError('');
     
-    // Simulate API call to verify code
-    setTimeout(() => {
-      setLoading(false);
-      setVerificationComplete(true);
+    try {
+      // Call API to verify reset token
+      await authService.verifyResetToken(email, values.token);
+      setToken(values.token);
       setCurrentStep(2);
-    }, 1500);
+    } catch (err) {
+      setError('Invalid or expired verification code. Please try again.');
+      console.error('Error verifying code:', err);
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Step 3: Set new password
-  const handleSetNewPassword = (values) => {
+  const handleSetNewPassword = async (values) => {
     setLoading(true);
+    setError('');
     
-    // Simulate API call to set new password
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Call API to reset password
+      await authService.resetPassword(email, token, values.password);
+      message.success('Password reset successful!');
       setCurrentStep(3);
-    }, 1500);
+    } catch (err) {
+      setError('Failed to reset password. Please try again.');
+      console.error('Error resetting password:', err);
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Handle login navigation after reset
@@ -98,6 +119,17 @@ const ForgotPasswordPage = () => {
             <Step title="Reset" />
             <Step title="Complete" />
           </Steps>
+          
+          {error && (
+            <Alert
+              message={error}
+              type="error"
+              showIcon
+              className="mb-4"
+              closable
+              onClose={() => setError('')}
+            />
+          )}
           
           {/* Step 1: Request password reset */}
           {currentStep === 0 && (
@@ -164,10 +196,10 @@ const ForgotPasswordPage = () => {
               />
               
               <Form.Item
-                name="verificationCode"
+                name="token"
                 rules={[
                   { required: true, message: 'Please enter the verification code!' },
-                  { len: 6, message: 'Verification code must be 6 digits!' }
+                  { min: 6, message: 'Verification code must be at least 6 characters!' }
                 ]}
               >
                 <Input 
@@ -175,7 +207,6 @@ const ForgotPasswordPage = () => {
                   placeholder="6-digit code"
                   size="large"
                   className="rounded-lg"
-                  maxLength={6}
                 />
               </Form.Item>
               
@@ -196,7 +227,11 @@ const ForgotPasswordPage = () => {
               <Divider plain>Didn't receive the code?</Divider>
               
               <div className="text-center">
-                <Button type="link" onClick={() => setCurrentStep(0)}>
+                <Button 
+                  type="link" 
+                  onClick={() => setCurrentStep(0)}
+                  disabled={loading}
+                >
                   Resend Code
                 </Button>
               </div>
@@ -209,6 +244,7 @@ const ForgotPasswordPage = () => {
               name="new-password"
               onFinish={handleSetNewPassword}
               layout="vertical"
+              form={form}
             >
               <Alert
                 message="Email Verified"
@@ -276,23 +312,33 @@ const ForgotPasswordPage = () => {
           
           {/* Step 4: Reset complete */}
           {currentStep === 3 && (
-            <Result
-              status="success"
-              title="Password Reset Successful!"
-              subTitle="Your password has been reset successfully. You can now log in with your new password."
-              extra={[
+            <div className="text-center py-8">
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+                  <CheckCircleFilled className="text-4xl text-green-500" />
+                </div>
+                
+                <Title level={3} className="mb-2">Password Reset Successful!</Title>
+                <Paragraph className="text-gray-600 mb-6">
+                  Your password has been reset successfully. You can now log in with your new password.
+                </Paragraph>
+                
                 <Button 
-                  type="primary" 
-                  key="login" 
-                  onClick={handleGoToLogin}
+                  type="primary"
                   size="large"
-                  className="rounded-lg"
+                  block
+                  onClick={handleGoToLogin}
+                  className="rounded-lg h-12"
                   style={{ backgroundColor: '#FF8C00', borderColor: '#FF8C00' }}
                 >
                   Log In Now
                 </Button>
-              ]}
-            />
+              </motion.div>
+            </div>
           )}
         </Card>
       </motion.div>

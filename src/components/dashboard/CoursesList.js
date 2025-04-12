@@ -77,7 +77,7 @@ const CoursesList = ({ limit = 0 }) => {
                   cover={
                     <div className="relative h-40 bg-gray-200">
                       <img 
-                        src={course.image_url || `/course-${course.id}.png`} 
+                        src={course.image_url} 
                         alt={course.title}
                         className="w-full h-full object-cover"
                       />

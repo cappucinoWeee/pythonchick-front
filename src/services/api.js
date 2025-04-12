@@ -48,14 +48,29 @@ apiClient.interceptors.response.use(
     
     // Handle 401 Unauthorized errors (token expired)
     if (error.response && error.response.status === 401) {
-      // Clear token and redirect to login
-      // localStorage.removeItem('token');
-      // localStorage.removeItem('user');
+      // Clear token and redirect to login if not on login page
+      if (!window.location.pathname.includes('/login')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        
+        // Show message about session expiration
+        if (window.antMessage) {
+          window.antMessage.error('Your session has expired. Please log in again.');
+        }
+        
+        // Redirect to login page
+        window.location.href = '/login';
+      }
     }
     
     return Promise.reject(error);
   }
 );
+
+// Allow antMessage to be set
+export const setAntMessage = (messageInstance) => {
+  window.antMessage = messageInstance;
+};
 
 // Export the API client
 export default apiClient;

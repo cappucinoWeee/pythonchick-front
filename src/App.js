@@ -1,7 +1,8 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, message } from 'antd';
+import { setAntMessage } from './services/api';
 
 // Auth Provider
 import { AuthProvider } from './context/AuthContext';
@@ -22,8 +23,6 @@ import ProfilePage from './pages/ProfilePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ContactPage from './pages/ContactPage';
-import EmailVerificationPage from './pages/EmailVerificationPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import SupportPage from './pages/SupportPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import LogoutPage from './pages/LogoutPage';
@@ -33,6 +32,8 @@ import CompilerPage from './pages/CompilerPage';
 
 // App Context Provider
 import { AppProvider } from './context/AppContext';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 // Custom theme configuration for Ant Design
 const theme = {
@@ -48,6 +49,11 @@ const theme = {
 };
 
 function App() {
+  // Initialize message global instance for the API client
+  useEffect(() => {
+    setAntMessage(message);
+  }, []);
+
   return (
     <ConfigProvider theme={theme}>
       <AuthProvider>
@@ -59,7 +65,8 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/logout" element={<LogoutPage />} />
               <Route path="/verification" element={<EmailVerificationPage />} />
-              <Route path="/forgot" element={<ForgotPasswordPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              {/* <Route path="/reset-password" element={<ResetPasswordPage />} /> */}
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/support" element={<SupportPage />} />
@@ -67,7 +74,6 @@ function App() {
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
-
                   <Route index element={<Navigate to="/dashboard" replace />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="courses" element={<CoursesPage />} />

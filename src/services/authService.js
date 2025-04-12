@@ -184,10 +184,25 @@ const authService = {
     }
   },
   
-  // Reset password
-  resetPassword: async (resetData) => {
+  // Verify reset token
+  verifyResetToken: async (email, token) => {
     try {
-      const response = await apiClient.post('/auth/reset-password', resetData);
+      const response = await apiClient.post('/auth/verify-reset-token', { email, token });
+      return response.data;
+    } catch (error) {
+      console.error('Verify token error:', error);
+      throw error;
+    }
+  },
+  
+  // Reset password
+  resetPassword: async (email, token, newPassword) => {
+    try {
+      const response = await apiClient.post('/auth/reset-password', { 
+        email, 
+        token, 
+        new_password: newPassword 
+      });
       return response.data;
     } catch (error) {
       console.error('Password reset error:', error);

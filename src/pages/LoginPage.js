@@ -199,7 +199,7 @@ const LoginPage = () => {
                   <Form.Item>
                     <div className="flex justify-between items-center">
                       <Checkbox name="remember" disabled={loading}>Remember me</Checkbox>
-                      <Link to="/forgot" className="text-primary hover:text-primary-dark">
+                      <Link to="/forgot-password" className="text-primary hover:text-primary-dark">
                         Forgot password?
                       </Link>
                     </div>
