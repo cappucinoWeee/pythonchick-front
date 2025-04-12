@@ -20,31 +20,27 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
   const location = useLocation();
   const { user } = useAuth();
   
-  // Menu items
+  // Menu items with proper structure for Ant Design 4.20.0+
   const menuItems = [
     { 
       key: '/dashboard', 
       icon: <HomeOutlined />, 
       label: <Link to="/dashboard">Dashboard</Link>,
-      path: '/dashboard' 
     },
     { 
       key: '/courses', 
       icon: <BookOutlined />, 
       label: <Link to="/courses">Courses</Link>,
-      path: '/courses' 
     },
     { 
       key: '/compiler', 
       icon: <CodeOutlined />, 
       label: <Link to="/compiler">Compiler</Link>,
-      path: '/compiler' 
     },
     { 
       key: '/leaderboard', 
       icon: <TrophyOutlined />, 
       label: <Link to="/leaderboard">Leaderboard</Link>,
-      path: '/leaderboard' 
     },
   ];
 

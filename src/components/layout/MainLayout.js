@@ -38,7 +38,7 @@ const MainLayout = () => {
           onClose={toggleMobileSidebar}
           open={mobileOpen}
           width={250}
-          bodyStyle={{ padding: 0 }}
+          styles={{ body: { padding: 0 } }}
         >
           <Sidebar mobile={true} />
         </Drawer>

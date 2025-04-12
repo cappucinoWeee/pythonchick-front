@@ -1,8 +1,8 @@
 // src/context/AppContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import courseService from '../services/courseService';
 import { message } from 'antd';
+import courseService from '../services/courseService';
+import { useAuth } from './AuthContext';
 
 // Create the context
 const AppContext = createContext();
@@ -17,26 +17,75 @@ export const AppProvider = ({ children }) => {
   // Fetch courses from the API when the component mounts
   useEffect(() => {
     // Only fetch courses if user is authenticated
-    if (isAuthenticated && user?.id) {
+    if (isAuthenticated() && user?.id) {
       fetchCourses();
+    } else if (!isAuthenticated()) {
+      // If not authenticated, still fetch courses but without user progress
+      fetchCourses(null);
     }
   }, [isAuthenticated, user]);
   
   // Fetch all courses
-  const fetchCourses = async () => {
+  const fetchCourses = async (userId = user?.id) => {
     setLoading(true);
     try {
-      const data = await courseService.getAllCourses(user?.id);
-      setCourses(data);
+      const data = await courseService.getAllCourses(userId);
+      
+      // Process the data to make it compatible with our frontend components
+      const processedCourses = Array.isArray(data) 
+        ? data.map(processCourseData)
+        : [];
+      
+      setCourses(processedCourses);
     } catch (err) {
       console.error('Error fetching courses:', err);
       setError('Failed to load courses. Please try again later.');
       
-      // Use dummy data if the API fails
-      setCourses(initialCourses);
+      // // Try to use mock data if API fails
+      // try {
+      //   const response = await import('../mock.json');
+      //   const mockCourses = response.default.courses.map(processCourseData);
+      //   setCourses(mockCourses);
+      //   message.warning('Using demo data - could not connect to the server');
+      // } catch (mockError) {
+      //   console.error('Error loading mock data:', mockError);
+      // }
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Helper function to process course data from API to match frontend expectations
+  const processCourseData = (course) => {
+    // Process topics if they exist
+    const processedTopics = course.topics ? course.topics.map(topic => {
+      // Process lessons if they exist
+      const processedLessons = topic.lessons ? topic.lessons.map(lesson => ({
+        ...lesson,
+        // Ensure these properties exist for UI components
+        is_completed: lesson.is_completed || false,
+        completed: lesson.is_completed || false
+      })) : [];
+      
+      return {
+        ...topic,
+        // Ensure these properties exist for UI components
+        lessons: processedLessons,
+        is_locked: topic.is_locked === undefined ? (topic.order_index > 0) : topic.is_locked,
+        locked: topic.is_locked === undefined ? (topic.order_index > 0) : topic.is_locked,
+        lessons_count: topic.lessons_count || (topic.lessons ? topic.lessons.length : 0),
+        completed_lessons: topic.completed_lessons || 0
+      };
+    }) : [];
+    
+    return {
+      ...course,
+      // Ensure these properties exist for UI components
+      topics: processedTopics,
+      is_locked: course.is_locked === undefined ? (course.id !== 1) : course.is_locked,
+      locked: course.is_locked === undefined ? (course.id !== 1) : course.is_locked,
+      image_url: course.image_url || course.image || `/course-${course.id}.png`
+    };
   };
   
   // Complete a lesson
@@ -65,6 +114,7 @@ export const AppProvider = ({ children }) => {
         
         // Mark lesson as completed
         newCourses[courseIndex].topics[topicIndex].lessons[lessonIndex].is_completed = true;
+        newCourses[courseIndex].topics[topicIndex].lessons[lessonIndex].completed = true;
         
         // Update completed lessons count
         newCourses[courseIndex].topics[topicIndex].completed_lessons = 
@@ -87,7 +137,7 @@ export const AppProvider = ({ children }) => {
   // Reset progress (for development/testing)
   const resetProgress = () => {
     // In a real app, you would call an API to reset progress
-    setCourses(initialCourses);
+    setCourses(courses.map(processCourseData));
     message.info('Progress has been reset (for development purposes)');
   };
   
@@ -99,7 +149,9 @@ export const AppProvider = ({ children }) => {
     error,
     completeLesson,
     resetProgress,
-    fetchCourses
+    fetchCourses,
+    userProgress,
+    setUserProgress
   };
   
   return (
@@ -111,76 +163,5 @@ export const AppProvider = ({ children }) => {
 
 // Custom hook to use the context
 export const useAppContext = () => useContext(AppContext);
-
-// Sample initial courses data for fallback
-const initialCourses = [
-  {
-    id: 1,
-    title: "Python Basics",
-    description: "Learn the fundamentals of Python programming",
-    image_url: "/python-basics.png",
-    is_locked: false,
-    topics: [
-      {
-        id: 101,
-        title: "Getting Started",
-        description: "Introduction to Python",
-        is_locked: false,
-        lessons: [
-          { id: 1001, title: "What is Python?", type: "lesson", is_completed: false },
-          { id: 1002, title: "Installing Python", type: "lesson", is_completed: false },
-          { id: 1003, title: "Your First Program", type: "lesson", is_completed: false },
-          { id: 1004, title: "Quiz: Python Basics", type: "quiz", is_completed: false }
-        ]
-      },
-      {
-        id: 102,
-        title: "Variables & Data Types",
-        description: "Learn about variables and basic data types",
-        is_locked: true,
-        lessons: [
-          { id: 1005, title: "Variables", type: "lesson", is_completed: false },
-          { id: 1006, title: "Numbers", type: "lesson", is_completed: false },
-          { id: 1007, title: "Strings", type: "lesson", is_completed: false },
-          { id: 1008, title: "Lists", type: "lesson", is_completed: false },
-          { id: 1009, title: "Quiz: Variables & Data Types", type: "quiz", is_completed: false }
-        ]
-      },
-      {
-        id: 103,
-        title: "Control Flow",
-        description: "Master if statements and loops",
-        is_locked: true,
-        lessons: [
-          { id: 1010, title: "If Statements", type: "lesson", is_completed: false },
-          { id: 1011, title: "For Loops", type: "lesson", is_completed: false },
-          { id: 1012, title: "While Loops", type: "lesson", is_completed: false },
-          { id: 1013, title: "Quiz: Control Flow", type: "quiz", is_completed: false }
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: "Python Functions",
-    description: "Learn how to create and use functions",
-    image_url: "/python-functions.png",
-    is_locked: true,
-    topics: [
-      {
-        id: 201,
-        title: "Basic Functions",
-        description: "Creating and calling functions",
-        is_locked: false,
-        lessons: [
-          { id: 2001, title: "Function Basics", type: "lesson", is_completed: false },
-          { id: 2002, title: "Parameters & Arguments", type: "lesson", is_completed: false },
-          { id: 2003, title: "Return Values", type: "lesson", is_completed: false },
-          { id: 2004, title: "Quiz: Basic Functions", type: "quiz", is_completed: false }
-        ]
-      }
-    ]
-  }
-];
 
 export default AppContext;

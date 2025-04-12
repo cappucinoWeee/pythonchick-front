@@ -13,6 +13,15 @@ const apiClient = axios.create({
   }
 });
 
+// Log the configuration in development mode
+if (process.env.NODE_ENV === 'development') {
+  console.log('API Config:', { 
+    baseURL: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
+    withCredentials: API_CONFIG.WITH_CREDENTIALS
+  });
+}
+
 // Request interceptor for adding auth token
 apiClient.interceptors.request.use(
   (config) => {
@@ -34,22 +43,16 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Log detailed errors in development
+    console.error('API Error:', error.response || error);
+    
     // Handle 401 Unauthorized errors (token expired)
     if (error.response && error.response.status === 401) {
       // Clear token and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // window.location.href = '/login';
-    }
-    
-    // Handle 400 Bad Request (validation errors)
-    if (error.response && error.response.status === 400) {
-      console.error('Validation Error:', error.response.data);
-    }
-    
-    // Handle 500 Internal Server Error
-    if (error.response && error.response.status === 500) {
-      console.error('Server Error:', error.response.data);
+      // We don't force redirect here to avoid interrupting the current process
+      // Instead, the AuthContext will handle redirects when it detects no valid token
     }
     
     return Promise.reject(error);

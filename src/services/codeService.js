@@ -17,11 +17,27 @@ const codeService = {
       return response.data;
     } catch (error) {
       console.error('Code execution error:', error);
+      
+      // Fallback for development if API is not available
+      if (process.env.NODE_ENV === 'development') {
+        // Simulate API response for testing
+        console.warn('Using mock code execution response');
+        const mockSuccess = Math.random() > 0.2; // 80% chance of success
+        return {
+          execution_id: `mock-${Date.now()}`,
+          success: mockSuccess,
+          output: mockSuccess ? (expectedOutput || "Hello, World!") : "",
+          error: mockSuccess ? "" : "There was an error in your code",
+          execution_time: Math.random() * 0.5,
+          matches_expected: mockSuccess && expectedOutput ? true : false
+        };
+      }
+      
       throw error;
     }
   },
   
-  // Save code snippet (you may implement this endpoint on your backend)
+  // Save code snippet
   saveCodeSnippet: async (title, code, description = '') => {
     try {
       const response = await apiClient.post('/code/save', {
@@ -36,7 +52,7 @@ const codeService = {
     }
   },
   
-  // Get saved code snippets (you may implement this endpoint on your backend)
+  // Get saved code snippets
   getSavedCodeSnippets: async () => {
     try {
       const response = await apiClient.get('/code/snippets');
@@ -47,7 +63,7 @@ const codeService = {
     }
   },
   
-  // Delete code snippet (you may implement this endpoint on your backend)
+  // Delete code snippet
   deleteCodeSnippet: async (snippetId) => {
     try {
       await apiClient.delete(`/code/snippets/${snippetId}`);
@@ -57,34 +73,6 @@ const codeService = {
       throw error;
     }
   }
-  
-  // Note: Game-related methods are commented out as requested
-  /* 
-  // Get game challenges
-  getChallenges: async (difficulty = 'beginner') => {
-    try {
-      const response = await apiClient.get(`/games/challenges?difficulty=${difficulty}`);
-      return response.data;
-    } catch (error) {
-      console.error('Get challenges error:', error);
-      throw error;
-    }
-  },
-  
-  // Submit challenge solution
-  submitChallenge: async (challengeId, code) => {
-    try {
-      const response = await apiClient.post('/games/challenges/submit', {
-        challenge_id: challengeId,
-        code: code
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Submit challenge error:', error);
-      throw error;
-    }
-  }
-  */
 };
 
 export default codeService;

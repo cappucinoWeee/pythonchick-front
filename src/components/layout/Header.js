@@ -1,6 +1,6 @@
 // src/components/layout/Header.js
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Dropdown, Badge, Button, Space, Tooltip, Avatar } from 'antd';
 import { 
   BellOutlined, 
@@ -16,16 +16,40 @@ import { useAuth } from '../../context/AuthContext';
 const { Header: AntHeader } = Layout;
 
 const Header = ({ toggleMobileSidebar }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine which menu item is active
+  const activeKey = location.pathname.split('/')[1] || 'dashboard';
 
   // Handle logout
   const handleLogout = () => {
     navigate('/logout');
   };
 
-  // Dropdown menu items
+  // Define menu items for Ant Design 4.20.0+ compatibility
   const menuItems = [
+    {
+      key: 'dashboard',
+      label: <Link to="/dashboard">Dashboard</Link>
+    },
+    {
+      key: 'courses',
+      label: <Link to="/courses">Courses</Link>
+    },
+    {
+      key: 'leaderboard',
+      label: <Link to="/leaderboard">Leaderboard</Link>
+    },
+    {
+      key: 'compiler',
+      label: <Link to="/compiler">Compiler</Link>
+    }
+  ];
+
+  // Dropdown menu items for user profile
+  const dropdownItems = [
     {
       key: 'profile',
       icon: <UserOutlined />,
@@ -62,10 +86,6 @@ const Header = ({ toggleMobileSidebar }) => {
               src="/logo.png"
               alt="Pythonchick"
               className="mr-2 w-auto h-8 sm:h-10 md:h-12 transition-all"
-              onError={(e) => {
-                e.target.onerror = null; // Prevent infinite loop
-                e.target.src = 'https://via.placeholder.com/50x50?text=Logo'; // Fallback image
-              }}
             />
             <span className="text-xl font-display text-primary hidden sm:inline">
               Pythonchick
@@ -74,20 +94,12 @@ const Header = ({ toggleMobileSidebar }) => {
         </div>
 
         <div className="flex-1 mx-4 hidden md:block">
-          <Menu mode="horizontal" className="border-0" selectedKeys={[]}>
-            <Menu.Item key="dashboard">
-              <Link to="/dashboard">Dashboard</Link>
-            </Menu.Item>
-            <Menu.Item key="courses">
-              <Link to="/courses">Courses</Link>
-            </Menu.Item>
-            <Menu.Item key="leaderboard">
-              <Link to="/leaderboard">Leaderboard</Link>
-            </Menu.Item>
-            <Menu.Item key="compiler">
-              <Link to="/compiler">Compiler</Link>
-            </Menu.Item>
-          </Menu>
+          <Menu 
+            mode="horizontal" 
+            className="border-0" 
+            selectedKeys={[activeKey]}
+            items={menuItems}
+          />
         </div>
 
         <Space size="large" className="items-center">
@@ -120,7 +132,7 @@ const Header = ({ toggleMobileSidebar }) => {
           </Tooltip>
 
           <Dropdown
-            menu={{ items: menuItems }}
+            menu={{ items: dropdownItems }}
             trigger={['click']}
             placement="bottomRight"
           >

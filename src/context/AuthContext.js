@@ -1,6 +1,7 @@
 // src/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../services/authService';
+import { message } from 'antd';
 
 // Create authentication context
 const AuthContext = createContext();
@@ -23,10 +24,27 @@ export const AuthProvider = ({ children }) => {
             // Optionally fetch fresh user data from API
             try {
               const userData = await authService.getCurrentUserProfile();
-              setUser(userData);
+              setUser({
+                ...storedUser,
+                ...userData,
+                // Ensure we have these properties for the UI
+                level: userData.level || 1,
+                experience: userData.experience || 0,
+                coins: userData.coins || 0,
+                streak: userData.streak || 0,
+                rank: userData.rank || 1
+              });
             } catch (error) {
-              // If cannot get user data, use the stored user info
-              setUser(storedUser);
+              console.warn('Could not get fresh user data, using stored data', error);
+              // If cannot get user data, use the stored user info with defaults
+              setUser({
+                ...storedUser,
+                level: storedUser.level || 1,
+                experience: storedUser.experience || 0,
+                coins: storedUser.coins || 0,
+                streak: storedUser.streak || 0,
+                rank: storedUser.rank || 1
+              });
             }
           }
         }
@@ -49,14 +67,30 @@ export const AuthProvider = ({ children }) => {
     try {
       const authData = await authService.login(credentials);
       
-      // Set the user data
-      const userData = {
-        id: authData.user_id,
-        username: authData.username,
-        // Include any other user data you get from login response
-      };
+      // Get full user profile
+      let userData;
+      try {
+        userData = await authService.getCurrentUserProfile();
+      } catch (profileError) {
+        console.warn('Could not fetch user profile after login', profileError);
+        // Use basic user data from auth response
+        userData = {
+          id: authData.user_id,
+          username: authData.username,
+        };
+      }
       
-      setUser(userData);
+      // Set the user data with defaults for UI
+      setUser({
+        ...userData,
+        level: userData.level || 1,
+        experience: userData.experience || 0,
+        coins: userData.coins || 0,
+        streak: userData.streak || 0,
+        rank: userData.rank || 1
+      });
+      
+      message.success('Login successful!');
       return authData;
     } catch (error) {
       setError(error);
@@ -72,7 +106,9 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
-      return await authService.register(userData);
+      const result = await authService.register(userData);
+      message.success('Registration successful! You can now log in.');
+      return result;
     } catch (error) {
       setError(error);
       throw error;
@@ -85,6 +121,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     authService.logout();
     setUser(null);
+    message.info('You have been logged out.');
   };
   
   // Update user profile
@@ -94,7 +131,11 @@ export const AuthProvider = ({ children }) => {
     
     try {
       const updatedUser = await authService.updateProfile(userId, profileData);
-      setUser(updatedUser);
+      setUser((prevUser) => ({
+        ...prevUser,
+        ...updatedUser
+      }));
+      message.success('Profile updated successfully!');
       return updatedUser;
     } catch (error) {
       setError(error);
@@ -107,6 +148,7 @@ export const AuthProvider = ({ children }) => {
   // Context value
   const value = {
     user,
+    setUser,
     loading,
     error,
     login,

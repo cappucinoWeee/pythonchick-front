@@ -1,7 +1,7 @@
 // src/components/courses/LessonsList.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { List, Tag, Tooltip, Card, Typography, Progress } from 'antd';
+import { Tag, Tooltip, Card, Typography, Progress } from 'antd';
 import { 
   LockOutlined, 
   CheckCircleOutlined,
@@ -17,14 +17,36 @@ import { motion } from 'framer-motion';
 const { Text } = Typography;
 
 const LessonsList = ({ course, topic }) => {
+  // Add debugging in development
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('LessonsList rendering with:', { 
+        courseId: course?.id,
+        topicId: topic?.id,
+        lessonCount: topic?.lessons?.length || 0
+      });
+    }
+  }, [course, topic]);
+
+  // Check if lessons exist
+  if (!topic || !topic.lessons || !Array.isArray(topic.lessons) || topic.lessons.length === 0) {
+    return (
+      <div className="text-center py-6 text-gray-500">
+        No lessons available for this topic yet.
+      </div>
+    );
+  }
+  
   // Find the last completed lesson to determine what's unlocked
-  const lastCompletedIndex = topic.lessons.findLastIndex(lesson => lesson.completed);
+  const lastCompletedIndex = topic.lessons.findLastIndex(lesson => 
+    lesson.is_completed || lesson.completed
+  );
   
   // Get icon based on lesson type and status
   const getLessonIcon = (lesson, isLocked) => {
     if (isLocked) {
       return <LockOutlined className="text-gray-400" />;
-    } else if (lesson.completed) {
+    } else if (lesson.is_completed || lesson.completed) {
       return <CheckCircleOutlined className="text-green-500" />;
     } else if (lesson.type === 'quiz') {
       return <QuestionCircleOutlined className="text-purple-500" />;
@@ -61,10 +83,10 @@ const LessonsList = ({ course, topic }) => {
     <div className="lessons-list">
       <div className="flex justify-between items-center mb-4">
         <div className="text-sm text-gray-500">
-          {topic.lessons.filter(lesson => lesson.completed).length} of {topic.lessons.length} lessons completed
+          {topic.lessons.filter(lesson => lesson.is_completed || lesson.completed).length} of {topic.lessons.length} lessons completed
         </div>
         <Progress 
-          percent={Math.round((topic.lessons.filter(lesson => lesson.completed).length / topic.lessons.length) * 100)} 
+          percent={Math.round((topic.lessons.filter(lesson => lesson.is_completed || lesson.completed).length / topic.lessons.length) * 100)} 
           showInfo={false}
           strokeColor="#1890FF"
           className="w-32"
@@ -73,8 +95,8 @@ const LessonsList = ({ course, topic }) => {
       </div>
       
       {topic.lessons.map((lesson, index) => {
-        const isLocked = index > lastCompletedIndex + 1 && !lesson.completed;
-        const isCompleted = lesson.completed;
+        const isLocked = index > lastCompletedIndex + 1 && !(lesson.is_completed || lesson.completed);
+        const isCompleted = lesson.is_completed || lesson.completed;
         const icon = getLessonIcon(lesson, isLocked);
         
         return (

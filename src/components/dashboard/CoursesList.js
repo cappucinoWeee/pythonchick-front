@@ -80,10 +80,6 @@ const CoursesList = ({ limit = 0 }) => {
                         src={course.image_url || `/course-${course.id}.png`} 
                         alt={course.title}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null; // Prevent infinite loop
-                          e.target.src = '/default-course.png'; // Fallback image
-                        }}
                       />
                       {course.is_locked && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">

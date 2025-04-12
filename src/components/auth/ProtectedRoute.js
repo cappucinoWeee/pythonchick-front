@@ -3,6 +3,7 @@ import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Spin } from 'antd';
 import { useAuth } from '../../context/AuthContext';
+import FullScreenSpin from '../layout/FullScreenSpin';
 
 const ProtectedRoute = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -10,17 +11,13 @@ const ProtectedRoute = () => {
 
   // Show loading spinner while auth is being checked
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Spin size="large" tip="Loading authentication..." />
-      </div>
-    );
+    return <FullScreenSpin tip="Loading authentication..." />;
   }
 
   // Redirect to login if not authenticated
-//   if (!isAuthenticated()) {
-//     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-//   }
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
 
   // If authenticated, render the child routes
   return <Outlet />;
