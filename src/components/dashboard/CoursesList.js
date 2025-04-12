@@ -1,4 +1,4 @@
-// src/components/dashboard/CoursesList.js
+// src/components/dashboard/CoursesList.js - Update the image handling
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Row, Col, Card, Badge, Tooltip, Progress, Tag, Button, Skeleton } from 'antd';
@@ -11,6 +11,13 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../../context/AppContext';
+
+// Fallback images for courses
+const fallbackImages = {
+  1: 'python-basics.png',
+  2: 'python-functions.png',
+  3: 'python-classes.png'
+};
 
 const CoursesList = ({ limit = 0 }) => {
   const { courses, loading } = useAppContext();
@@ -33,20 +40,35 @@ const CoursesList = ({ limit = 0 }) => {
       </Row>
     );
   }
+
+  const getImageSource = (course) => {
+    // If there's a valid image_url, use it
+    switch(course.id) {
+      case 1:
+        return "/python-basics.png";
+      case 2:
+        return "/python-functions.png";
+      case 3:
+        return "/python-classes.png";
+      default:
+        return "/python-basics.png";  
+      }
+  }
+  
   
   return (
     <Row gutter={[24, 24]}>
       {displayedCourses.map((course) => {
         // Calculate progress based on completed lessons
         const totalLessons = course.topics.reduce(
-          (sum, topic) => sum + topic.lessons.length, 0
+          (sum, topic) => sum + topic.lessons_count, 0
         );
         
         const completedLessons = course.topics.reduce(
-          (sum, topic) => sum + topic.lessons.filter(lesson => lesson.is_completed).length, 0
+          (sum, topic) => sum + topic.completed_lessons, 0
         );
         
-        const progressPercentage = Math.round((completedLessons / totalLessons) * 100) || 0;
+        const progressPercentage = Math.round((completedLessons / Math.max(totalLessons, 1)) * 100) || 0;
         
         // Next lesson URL to continue where the user left off
         let nextLessonUrl = `/courses/${course.id}`;
@@ -55,7 +77,7 @@ const CoursesList = ({ limit = 0 }) => {
         for (const topic of course.topics) {
           if (topic.is_locked) continue;
           
-          const incompleteLesson = topic.lessons.find(lesson => !lesson.is_completed);
+          const incompleteLesson = topic.lessons?.find?.(lesson => !lesson.is_completed);
           if (incompleteLesson) {
             nextLessonUrl = `/courses/${course.id}/topics/${topic.id}/lessons/${incompleteLesson.id}`;
             break;
@@ -77,7 +99,7 @@ const CoursesList = ({ limit = 0 }) => {
                   cover={
                     <div className="relative h-40 bg-gray-200">
                       <img 
-                        src={course.image_url} 
+                        src={getImageSource(course)}
                         alt={course.title}
                         className="w-full h-full object-cover"
                       />

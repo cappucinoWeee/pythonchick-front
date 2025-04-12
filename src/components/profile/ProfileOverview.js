@@ -1,4 +1,4 @@
-// src/components/profile/ProfileOverview.js
+// src/components/profile/ProfileOverview.js - Updated version with reliable avatar loading
 import React, { useState } from 'react';
 import { Row, Col, Card, Typography, Badge, Avatar, Progress, Tooltip, Upload, message, Modal } from 'antd';
 import { 
@@ -14,6 +14,16 @@ const { Title, Text } = Typography;
 const ProfileOverview = ({ user, achievementsCount = 0, onAvatarChange }) => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
+  
+  // Get a reliable avatar URL
+  const getAvatarUrl = () => {
+    // If user has an avatar_url and it's not a complex external URL
+    if (user.avatar && !user.avatar.includes('oaiusercontent.com')) {
+      return user.avatar;
+    }
+    // Otherwise, use a default avatar
+    return null; // This will trigger the fallback icon
+  };
   
   const handleAvatarChange = (info) => {
     if (info.file.status === 'uploading') {
@@ -76,7 +86,7 @@ const ProfileOverview = ({ user, achievementsCount = 0, onAvatarChange }) => {
                   <div className="relative group">
                     <Avatar 
                       size={80} 
-                      src={user.avatar || "/default-avatar.png"}
+                      src={getAvatarUrl()}
                       icon={<UserOutlined />}
                       className="border-2 border-primary"
                     />
@@ -104,11 +114,6 @@ const ProfileOverview = ({ user, achievementsCount = 0, onAvatarChange }) => {
                   
                   <Tooltip title="Coins earned">
                     <span className="flex items-center">
-                      <img 
-                        src="/coin.png" 
-                        alt="Coins" 
-                        className="h-4 mr-1" 
-                      />
                       <span className="font-medium">{user.coins} coins</span>
                     </span>
                   </Tooltip>

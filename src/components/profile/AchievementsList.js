@@ -1,9 +1,31 @@
-// src/components/profile/AchievementsList.js
+// src/components/profile/AchievementsList.js - Updated with reliable icon display
 import React from 'react';
 import { Row, Col, Card, Badge, Typography } from 'antd';
 import { motion } from 'framer-motion';
+import { 
+  TrophyOutlined,
+  StarOutlined,
+  FireOutlined,
+  CheckCircleOutlined,
+  RocketOutlined
+} from '@ant-design/icons';
 
 const { Title, Text } = Typography;
+
+// Map achievement icons to ensure they display
+const getAchievementIcon = (iconCode) => {
+  switch(iconCode) {
+    case '🔰': return <RocketOutlined style={{ fontSize: 36, color: '#1890FF' }} />;
+    case '⚡': return <FireOutlined style={{ fontSize: 36, color: '#FF4D4F' }} />;
+    case '🏆': return <TrophyOutlined style={{ fontSize: 36, color: '#52C41A' }} />;
+    case '🔥': return <FireOutlined style={{ fontSize: 36, color: '#FF4D4F' }} />;
+    case '🐍': return <StarOutlined style={{ fontSize: 36, color: '#722ED1' }} />;
+    case '🐞': return <CheckCircleOutlined style={{ fontSize: 36, color: '#FF8C00' }} />;
+    case '👥': return <TrophyOutlined style={{ fontSize: 36, color: '#1890FF' }} />;
+    case '🌅': return <RocketOutlined style={{ fontSize: 36, color: '#FF8C00' }} />;
+    default: return <TrophyOutlined style={{ fontSize: 36, color: '#1890FF' }} />;
+  }
+};
 
 // Sample achievements data
 const sampleAchievements = [
@@ -90,8 +112,8 @@ const AchievementsList = ({ achievements = sampleAchievements }) => {
                 className={`text-center h-full ${!item.earned ? 'opacity-60' : ''}`}
                 bordered
               >
-                <div className={`text-5xl mb-3 ${!item.earned ? 'grayscale' : ''}`}>
-                  {item.icon}
+                <div className={`mb-3 ${!item.earned ? 'grayscale' : ''}`}>
+                  {getAchievementIcon(item.icon)}
                 </div>
                 <Title level={5} className="mb-1">
                   {item.title}

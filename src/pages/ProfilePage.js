@@ -1,13 +1,14 @@
-// src/pages/ProfilePage.js
-import React, { useState } from 'react';
-import { Card, Tabs, message } from 'antd';
+// src/pages/ProfilePage.js - Updated version with better error handling
+import React, { useState, useEffect } from 'react';
+import { Card, Tabs, message, Spin } from 'antd';
 import { 
   UserOutlined, 
   LockOutlined,
   BellOutlined,
   TrophyOutlined,
   HistoryOutlined,
-  SettingOutlined
+  SettingOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import { useAppContext } from '../context/AppContext';
 
@@ -22,22 +23,53 @@ import ProfileSettings from '../components/profile/ProfileSettings';
 
 const { TabPane } = Tabs;
 
-// Sample achievements data for the count
-const sampleAchievements = [
-  { id: 1, title: 'First Steps', earned: true },
-  { id: 2, title: 'Quick Learner', earned: true },
-  { id: 3, title: 'Quiz Master', earned: false },
-  { id: 4, title: 'Coding Streak', earned: false },
-  { id: 5, title: 'Python Beginner', earned: true }
-];
-
 const ProfilePage = () => {
   const { user, setUser } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
+  const [achievementsLoaded, setAchievementsLoaded] = useState(false);
+  const [achievements, setAchievements] = useState([]);
   
-  // Calculate achievements count directly
-  const earnedAchievementsCount = sampleAchievements.filter(a => a.earned).length;
+  // Sample achievements data for the count
+  const sampleAchievements = [
+    { id: 1, title: 'First Steps', earned: true },
+    { id: 2, title: 'Quick Learner', earned: true },
+    { id: 3, title: 'Quiz Master', earned: false },
+    { id: 4, title: 'Coding Streak', earned: false },
+    { id: 5, title: 'Python Beginner', earned: true }
+  ];
+  
+  // Load achievements
+  useEffect(() => {
+    const loadAchievements = async () => {
+      try {
+        // In a real app, you'd fetch from an API
+        // For now, we'll use sample data
+        setAchievements(sampleAchievements);
+        setAchievementsLoaded(true);
+      } catch (error) {
+        console.error("Failed to load achievements:", error);
+        message.error("Failed to load achievements");
+      }
+    };
+    
+    if (!achievementsLoaded) {
+      loadAchievements();
+    }
+  }, [achievementsLoaded]);
+  
+  // Calculate achievements count
+  const earnedAchievementsCount = achievements.filter(a => a.earned).length;
+  
+  // Check if user data is available
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        <span className="ml-2">Loading user profile...</span>
+      </div>
+    );
+  }
   
   // Handle form submissions
   const handlePersonalInfoSubmit = (values) => {

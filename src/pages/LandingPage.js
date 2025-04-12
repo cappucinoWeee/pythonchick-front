@@ -147,9 +147,9 @@ const LandingPage = () => {
                 transition={{ duration: 0.5 }}
               >
                 <img 
-                  src="/learning-illustration.png" 
+                  src="/dashboard.png" 
                   alt="Learning Illustration" 
-                  className="w-full rounded-lg shadow-lg"
+                  className="w-[400px] h-[400px]"
                 />
               </motion.div>
             </Col>
