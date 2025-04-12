@@ -35,6 +35,8 @@ import { AppProvider } from './context/AppContext';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import LandingPage from './pages/LandingPage';
+import GamesPage from './pages/GamesPage';
+import GameDetailPage from './pages/GameDetailPage';
 
 // Custom theme configuration for Ant Design
 const theme = {
@@ -72,11 +74,13 @@ function App() {
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/support" element={<SupportPage />} />
-              
+
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="games" element={<GamesPage />} />
+                  <Route path="games/:gameId" element={<GameDetailPage />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="courses" element={<CoursesPage />} />
                   <Route path="courses/:courseId" element={<CourseDetailPage />} />
