@@ -113,7 +113,118 @@ const gameService = {
       console.error('Get leaderboard error:', error);
       throw error;
     }
+  },
+
+  getAllGames: async (filters = {}) => {
+    try {
+      // Extract filters
+      const { difficulty, category, searchTerm } = filters;
+      
+      // Build query parameters
+      const params = {};
+      if (difficulty) params.difficulty = difficulty;
+      if (category) params.category = category;
+      
+      // Get user ID from localStorage if available
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.id) params.user_id = user.id;
+      
+      const response = await apiClient.get('/game', { params });
+      let games = response.data;
+      
+      // Apply client-side search filter if provided
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        games = games.filter(game => 
+          game.title.toLowerCase().includes(term) || 
+          game.description.toLowerCase().includes(term) ||
+          game.category.toLowerCase().includes(term)
+        );
+      }
+      
+      return games;
+    } catch (error) {
+      console.error('Get games error:', error);
+      
+      // Fallback to mock data if API is unavailable
+      console.warn('Using mock game data');
+      return import('../data/gamesMockData').then(module => {
+        const mockData = module.default;
+        
+        // Apply filters if provided
+        let filteredData = [...mockData];
+        
+        if (filters.difficulty) {
+          filteredData = filteredData.filter(g => 
+            g.difficulty.toLowerCase() === filters.difficulty.toLowerCase()
+          );
+        }
+        
+        if (filters.category) {
+          filteredData = filteredData.filter(g => 
+            g.category.toLowerCase() === filters.category.toLowerCase()
+          );
+        }
+        
+        if (filters.searchTerm) {
+          const term = filters.searchTerm.toLowerCase();
+          filteredData = filteredData.filter(g => 
+            g.title.toLowerCase().includes(term) || 
+            g.description.toLowerCase().includes(term)
+          );
+        }
+        
+        return filteredData;
+      });
+    }
+  },
+  
+  // Get game by slug
+  getGameBySlug: async (slug) => {
+    try {
+      // Get user ID from localStorage if available
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const params = user.id ? { user_id: user.id } : {};
+      
+      const response = await apiClient.get(`/game/${slug}`, { params });
+      return response.data;
+    } catch (error) {
+      console.error(`Get game ${slug} error:`, error);
+      
+      // Fallback to mock data if API is unavailable
+      console.warn(`Using mock game data for ${slug}`);
+      return import('../data/gamesMockData').then(module => {
+        const mockData = module.default;
+        return mockData.find(g => g.slug === slug);
+      });
+    }
+  },
+  
+  // Update game progress
+  updateGameProgress: async (gameId, progressData) => {
+    try {
+      const response = await apiClient.post(`/game/${gameId}/progress`, progressData);
+      return response.data;
+    } catch (error) {
+      console.error(`Update game progress error:`, error);
+      
+      // For development: simulate successful update
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Development mode: Simulating successful progress update');
+        
+        // Save progress to localStorage as fallback
+        const storageKey = `game_progress_${gameId}`;
+        const existingProgress = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        const updatedProgress = { ...existingProgress, ...progressData, last_updated: new Date().toISOString() };
+        localStorage.setItem(storageKey, JSON.stringify(updatedProgress));
+        
+        return updatedProgress;
+      }
+      
+      throw error;
+    }
   }
+
 };
 
 export default gameService;

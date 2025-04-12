@@ -24,6 +24,7 @@ import {
   LockOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import GameCard from '../components/games/GameCard';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -150,7 +151,7 @@ const GamesPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             
-            <Select defaultValue="all" style={{ width: 120 }}>
+            <Select defaultValue="all" style={{ width: 120 }} onChange={(value) => setActiveTab(value)}>
               <Option value="all">All Levels</Option>
               <Option value="beginner">Beginner</Option>
               <Option value="intermediate">Intermediate</Option>
@@ -178,7 +179,7 @@ const GamesPage = () => {
           <Row gutter={[16, 16]}>
             {filteredGames.map(game => (
               <Col xs={24} sm={12} md={8} key={game.id}>
-                <motion.div
+                {/* <motion.div
                   whileHover={{ y: -5 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -233,13 +234,60 @@ const GamesPage = () => {
                       }
                     />
                   </Card>
-                </motion.div>
+                </motion.div> */}
+                <GameCard game={game} />
               </Col>
             ))}
           </Row>
         ) : (
           <Empty description="No games found matching your criteria" />
         )}
+      </Card>
+      <Card className="shadow-md border-0">
+        <Title level={3}>Why Learn Through Games?</Title>
+        <Row gutter={[24, 24]} className="mt-4">
+          <Col xs={24} md={8}>
+            <motion.div
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="h-full">
+                <Title level={4}>Fun & Engaging</Title>
+                <Text>
+                  Learning through games makes coding enjoyable and keeps you motivated to continue learning.
+                </Text>
+              </Card>
+            </motion.div>
+          </Col>
+          
+          <Col xs={24} md={8}>
+            <motion.div
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="h-full">
+                <Title level={4}>Practical Application</Title>
+                <Text>
+                  Games provide real-world context for coding concepts, helping you understand how to apply them.
+                </Text>
+              </Card>
+            </motion.div>
+          </Col>
+          
+          <Col xs={24} md={8}>
+            <motion.div
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="h-full">
+                <Title level={4}>Track Your Progress</Title>
+                <Text>
+                  Earn XP, unlock achievements, and see your coding skills improve as you complete more games.
+                </Text>
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
       </Card>
     </div>
   );
