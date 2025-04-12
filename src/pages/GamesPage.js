@@ -12,7 +12,9 @@ import {
   Input,
   Select,
   Empty,
-  Spin
+  Spin,
+  message,
+  Alert
 } from 'antd';
 import { Link } from 'react-router-dom';
 import { 
@@ -25,6 +27,8 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import GameCard from '../components/games/GameCard';
+import gameService from '../services/gameService';
+import { useAuth } from '../context/AuthContext';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -32,93 +36,54 @@ const { Search } = Input;
 const { Option } = Select;
 
 const GamesPage = () => {
+  const { user } = useAuth();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
+  const [error, setError] = useState(null);
   
-  // Sample games data - in a real app, this would come from an API
+  // Fetch games data from the API
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setGames([
-        {
-          id: 1,
-          title: 'Python Adventure',
-          description: 'Learn basic Python concepts in a fun adventure where you\'ll solve puzzles and complete challenges.',
-          image: '/games/python-adventure.png',
-          difficulty: 'Beginner',
-          category: 'adventure',
-          xp: 150,
-          unlocked: true
-        },
-        {
-          id: 2,
-          title: 'Code Rescue',
-          description: 'Save characters by solving coding challenges. Write functions to help characters overcome obstacles.',
-          image: '/games/code-rescue.png',
-          difficulty: 'Intermediate',
-          category: 'puzzle',
-          xp: 300,
-          unlocked: true
-        },
-        {
-          id: 3,
-          title: 'Logic Castle',
-          description: 'Build logical structures to solve puzzles in this castle of mysteries. Test your logical thinking.',
-          image: '/games/logic-castle.png',
-          difficulty: 'Intermediate',
-          category: 'puzzle',
-          xp: 250,
-          unlocked: false
-        },
-        {
-          id: 4,
-          title: 'Debug Detective',
-          description: 'Find and fix bugs to solve mysteries. Put your debugging skills to the test in this detective story.',
-          image: '/games/debug-detective.png',
-          difficulty: 'Advanced',
-          category: 'mystery',
-          xp: 400,
-          unlocked: false
-        },
-        {
-          id: 5,
-          title: 'Space Coder',
-          description: 'Explore the universe while learning Python. Complete missions by writing code to navigate your spaceship.',
-          image: '/games/space-coder.png',
-          difficulty: 'Beginner',
-          category: 'adventure',
-          xp: 200,
-          unlocked: true
-        },
-        {
-          id: 6,
-          title: 'Variable Quest',
-          description: 'Master Python variables in this epic quest. Solve puzzles by using different variable types correctly.',
-          image: '/games/variable-quest.png',
-          difficulty: 'Beginner',
-          category: 'quest',
-          xp: 180,
-          unlocked: true
+    const fetchGames = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Construct filter object for the API call
+        const filters = {
+          difficulty: difficultyFilter !== 'all' ? difficultyFilter : null,
+          category: activeTab !== 'all' && activeTab !== 'unlocked' ? activeTab : null,
+          searchTerm: searchTerm || null
+        };
+        
+        const data = await gameService.getAllGames(filters);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Games data:', data);
         }
-      ]);
-      setLoading(false);
-    }, 500);
-  }, []);
+        
+        setGames(data);
+      } catch (err) {
+        console.error('Error fetching games:', err);
+        setError('Failed to load games. Please try again later.');
+        message.error('Failed to load games');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchGames();
+  }, [activeTab, difficultyFilter, searchTerm]);
   
-  // Filter games based on tab and search term
+  // Filter games based on active tab (this is for client-side filtering)
   const filteredGames = games.filter(game => {
-    const matchesTab = activeTab === 'all' || 
-                       (activeTab === 'unlocked' && game.unlocked) ||
-                       (activeTab === 'locked' && !game.unlocked) ||
-                       (activeTab === game.difficulty.toLowerCase()) ||
-                       (activeTab === game.category);
-                       
-    const matchesSearch = game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          game.description.toLowerCase().includes(searchTerm.toLowerCase());
-                          
-    return matchesTab && matchesSearch;
+    // For 'unlocked' tab, filter by unlocked status
+    if (activeTab === 'unlocked') {
+      return game.unlocked;
+    }
+    
+    return true;  // All other filtering is done by the API
   });
   
   return (
@@ -149,9 +114,15 @@ const GamesPage = () => {
               style={{ width: 200 }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onSearch={value => setSearchTerm(value)}
+              allowClear
             />
             
-            <Select defaultValue="all" style={{ width: 120 }} onChange={(value) => setActiveTab(value)}>
+            <Select 
+              defaultValue="all" 
+              style={{ width: 120 }} 
+              onChange={(value) => setDifficultyFilter(value)}
+            >
               <Option value="all">All Levels</Option>
               <Option value="beginner">Beginner</Option>
               <Option value="intermediate">Intermediate</Option>
@@ -171,6 +142,18 @@ const GamesPage = () => {
           <TabPane tab="Quest" key="quest" />
         </Tabs>
         
+        {error && (
+          <div className="mb-4">
+            <Alert 
+              message="Error Loading Games" 
+              description={error}
+              type="error"
+              showIcon
+              closable
+            />
+          </div>
+        )}
+        
         {loading ? (
           <div className="text-center py-8">
             <Spin size="large" />
@@ -179,62 +162,6 @@ const GamesPage = () => {
           <Row gutter={[16, 16]}>
             {filteredGames.map(game => (
               <Col xs={24} sm={12} md={8} key={game.id}>
-                {/* <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card 
-                    hoverable
-                    cover={
-                      <div className="relative h-48 overflow-hidden">
-                        <img 
-                          alt={game.title}
-                          src={game.image}
-                          className="w-full h-full object-cover"
-                        />
-                        
-                        {!game.unlocked && (
-                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                            <LockOutlined className="text-3xl text-white" />
-                          </div>
-                        )}
-                        
-                        <Badge 
-                          count={game.difficulty}
-                          style={{ backgroundColor: 
-                            game.difficulty === 'Beginner' ? '#52c41a' : 
-                            game.difficulty === 'Intermediate' ? '#1890ff' : '#722ed1' 
-                          }}
-                          className="absolute top-2 right-2"
-                        />
-                      </div>
-                    }
-                    actions={[
-                      <div className="flex items-center justify-center">
-                        <TrophyOutlined className="text-yellow-500 mr-1" />
-                        <span>{game.xp} XP</span>
-                      </div>,
-                      <Link to={game.unlocked ? `/games/${game.id}` : '#'}>
-                        <Button 
-                          type="primary" 
-                          icon={<RocketOutlined />}
-                          disabled={!game.unlocked}
-                        >
-                          {game.unlocked ? 'Play Now' : 'Locked'}
-                        </Button>
-                      </Link>
-                    ]}
-                  >
-                    <Card.Meta
-                      title={game.title}
-                      description={
-                        <Paragraph ellipsis={{ rows: 2 }} className="text-gray-600">
-                          {game.description}
-                        </Paragraph>
-                      }
-                    />
-                  </Card>
-                </motion.div> */}
                 <GameCard game={game} />
               </Col>
             ))}
@@ -243,6 +170,7 @@ const GamesPage = () => {
           <Empty description="No games found matching your criteria" />
         )}
       </Card>
+      
       <Card className="shadow-md border-0">
         <Title level={3}>Why Learn Through Games?</Title>
         <Row gutter={[24, 24]} className="mt-4">
