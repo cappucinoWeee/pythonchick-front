@@ -19,12 +19,12 @@ const PersonalInfoForm = ({ user, loading, onFinish }) => {
           <div className="text-center">
             <Avatar 
               size={100} 
-              src={user.avatar || "/default-avatar.png"}
+              src={user.avatar_url || "/default-avatar.png"}
               icon={<UserOutlined />}
               className="mb-4 border-2 border-primary"
             />
-            <Title level={4} className="mb-1">{user.name}</Title>
-            <Text type="secondary">@pythonchick_user</Text>
+            <Title level={4} className="mb-1">{user.username}</Title>
+            <Text type="secondary">{`@${user.username}`}</Text>
             
             <div className="mt-4">
               <Progress 
@@ -61,7 +61,7 @@ const PersonalInfoForm = ({ user, loading, onFinish }) => {
             <UserOutlined className="text-blue-500 text-lg mr-3" />
             <div>
               <div className="font-medium">Joined Date</div>
-              <div className="text-sm text-gray-500">April 1, 2023</div>
+              <div className="text-sm text-gray-500">{user.created_at}</div>
             </div>
           </div>
         </Card>
@@ -71,9 +71,9 @@ const PersonalInfoForm = ({ user, loading, onFinish }) => {
         <Form
           layout="vertical"
           initialValues={{
-            name: user.name,
-            email: 'user@example.com',
-            username: 'pythonchick_user'
+            name: user.full_name,
+            email: user.email,
+            username: user.username,
           }}
           onFinish={onFinish}
         >

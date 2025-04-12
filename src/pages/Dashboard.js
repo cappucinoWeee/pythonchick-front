@@ -39,11 +39,11 @@ const Dashboard = () => {
           <Row gutter={[24, 24]} className="relative z-10">
             <Col xs={24} md={16} className="py-4">
               <div>
-                <Title level={2} className="font-display mb-2">Welcome back, {user?.name}!</Title>
+                <Title level={2} className="font-display mb-2">Welcome back, {user?.username}!</Title>
                 <Paragraph className="text-gray-600 text-lg mb-4">
                   Continue your Python learning adventure today
                 </Paragraph>
-                <Space size="middle">
+                <Space size="middle" className='flex flex-wrap'>
                   <Button size="large" icon={<RocketOutlined />} className="btn-primary">
                     <Link to="/courses">Continue Learning</Link>
                   </Button>
@@ -57,7 +57,7 @@ const Dashboard = () => {
               <img 
                 src="/dashboard.png" 
                 alt="Learning" 
-                className="max-h-45"
+                className="max-h-40 mr-32"
               />
             </Col>
           </Row>

@@ -56,14 +56,14 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
         {!collapsed && (
           <div className="flex items-center space-x-3">
             <Avatar 
-              src={user?.avatar} 
+              src={user?.avatar_url} 
               alt="Profile" 
               className="h-12 w-12 object-cover border-2 border-primary"
               icon={<UserOutlined />}
               size={48}
             />
             <div>
-              <h3 className="font-medium truncate">{user?.name || 'User'}</h3>
+              <h3 className="font-medium truncate">{user?.username || 'User'}</h3>
               <div className="flex items-center">
                 <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
                   Level {user?.level || 1}
@@ -76,7 +76,7 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
         {collapsed && (
           <div className="flex flex-col items-center justify-center">
             <Avatar 
-              src={user?.avatar} 
+              src={user?.avatar_url} 
               alt="Profile" 
               className="border-2 border-primary mb-2"
               icon={<UserOutlined />}
