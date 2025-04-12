@@ -9,7 +9,8 @@ import {
   CodeOutlined,
   SettingOutlined,
   UserOutlined,
-  FireOutlined
+  FireOutlined,
+  PlayCircleOutlined
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 
@@ -31,6 +32,11 @@ const Sidebar = ({ collapsed = false, mobile = false, className = '' }) => {
       key: '/courses', 
       icon: <BookOutlined />, 
       label: <Link to="/courses">Courses</Link>,
+    },
+    { 
+      key: '/games', 
+      icon: <PlayCircleOutlined />, 
+      label: <Link to="/games">Games</Link>,
     },
     { 
       key: '/compiler', 

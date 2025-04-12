@@ -16,6 +16,7 @@ import ActivityFeed from '../components/dashboard/ActivityFeed';
 import DailyGoals from '../components/dashboard/DailyGoals';
 import LeaderboardPreview from '../components/dashboard/LeaderboardPreview';
 import { useAppContext } from '../context/AppContext';
+import GamesSection from '../components/courses/GamesSection';
 
 const { Title, Paragraph } = Typography;
 
@@ -135,6 +136,7 @@ const Dashboard = () => {
           ))}
         </div>
       </Card>
+      <GamesSection />
     </div>
   );
 };
