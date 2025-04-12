@@ -39,7 +39,7 @@ apiClient.interceptors.response.use(
       // Clear token and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      // window.location.href = '/login';
     }
     
     // Handle 400 Bad Request (validation errors)
