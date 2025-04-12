@@ -49,10 +49,8 @@ apiClient.interceptors.response.use(
     // Handle 401 Unauthorized errors (token expired)
     if (error.response && error.response.status === 401) {
       // Clear token and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      // We don't force redirect here to avoid interrupting the current process
-      // Instead, the AuthContext will handle redirects when it detects no valid token
+      // localStorage.removeItem('token');
+      // localStorage.removeItem('user');
     }
     
     return Promise.reject(error);

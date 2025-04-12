@@ -1,15 +1,16 @@
 // src/components/games/GameChallenge.js
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Alert, Collapse, List, Tag, Space, message } from 'antd';
+import { Card, Button, Alert, Collapse, List, Tag, Space, message, Spin } from 'antd';
 import { 
   BulbOutlined, 
   StarOutlined, 
   TrophyOutlined,
-  CodeOutlined
+  CodeOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import CodeCompiler from '../compiler/CodeCompiler';
-import axios from 'axios';
-import { useAppContext } from '../../context/AppContext';
+import gameService from '../../services/gameService';
+import { useAuth } from '../../context/AuthContext';
 
 const { Panel } = Collapse;
 
@@ -17,28 +18,35 @@ const GameChallenge = ({ challenge, onCompleted }) => {
   const [showHints, setShowHints] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  const { user, setUser } = useAppContext();
+  const [submitting, setSubmitting] = useState(false);
+  const { user, setUser } = useAuth();
+  
+  // Update user data after completing a challenge
+  const updateUserData = (pointsEarned, coinsEarned) => {
+    if (user) {
+      setUser({
+        ...user,
+        experience: (user.experience || 0) + pointsEarned,
+        coins: (user.coins || 0) + coinsEarned
+      });
+    }
+  };
   
   const handleSubmitChallenge = async (code) => {
     try {
       setLoading(true);
+      setSubmitting(true);
       
-      const response = await axios.post('/api/v1/games/challenges/submit', {
-        challenge_id: challenge.id,
-        code: code
-      });
+      // Call API to submit challenge
+      const response = await gameService.submitChallenge(challenge.id, code);
       
-      setResult(response.data);
+      setResult(response);
       
-      if (response.data.correct) {
-        message.success(`Great job! You earned ${response.data.points_earned} XP and ${response.data.coins_earned} coins!`);
+      if (response.correct) {
+        message.success(`Great job! You earned ${response.points_earned} XP and ${response.coins_earned} coins!`);
         
-        // Update user context
-        setUser({
-          ...user,
-          experience: user.experience + response.data.points_earned,
-          coins: user.coins + response.data.coins_earned
-        });
+        // Update user data with earned points and coins
+        updateUserData(response.points_earned, response.coins_earned);
         
         // Notify parent component
         onCompleted && onCompleted(challenge.id);
@@ -47,15 +55,20 @@ const GameChallenge = ({ challenge, onCompleted }) => {
       }
     } catch (error) {
       console.error('Error submitting challenge:', error);
-      message.error('Error submitting challenge');
+      message.error('Error submitting challenge. Please try again.');
     } finally {
       setLoading(false);
+      setSubmitting(false);
     }
   };
   
   return (
     <div className="game-challenge">
-      <Card title={challenge.title} className="mb-4">
+      <Card 
+        title={challenge.title} 
+        className="mb-4"
+        loading={submitting}
+      >
         <div className="mb-4">
           <p>{challenge.description}</p>
           <Space className="mt-2">
@@ -72,13 +85,14 @@ const GameChallenge = ({ challenge, onCompleted }) => {
         >
           <Panel header="Hints" key="1">
             <List
-              dataSource={challenge.hints}
+              dataSource={challenge.hints || []}
               renderItem={(hint, index) => (
                 <List.Item>
                   <BulbOutlined className="text-yellow-500 mr-2" />
                   <span>{hint}</span>
                 </List.Item>
               )}
+              locale={{ emptyText: 'No hints available for this challenge' }}
             />
           </Panel>
         </Collapse>
@@ -95,11 +109,19 @@ const GameChallenge = ({ challenge, onCompleted }) => {
           />
         )}
         
-        <CodeCompiler
-          initialCode={challenge.starter_code}
-          onSuccess={handleSubmitChallenge}
-          loading={loading}
-        />
+        {submitting ? (
+          <div className="text-center py-8">
+            <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+            <p className="mt-2">Evaluating your code...</p>
+          </div>
+        ) : (
+          <CodeCompiler
+            initialCode={challenge.starter_code || "# Write your code here\n\n"}
+            onSuccess={handleSubmitChallenge}
+            expectedOutput={challenge.expected_output}
+            readOnly={loading}
+          />
+        )}
       </Card>
     </div>
   );

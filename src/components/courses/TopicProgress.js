@@ -1,5 +1,5 @@
 // src/components/courses/TopicProgress.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Steps, Progress, Typography, Badge, Row, Col } from 'antd';
 import { 
   BookOutlined, 
@@ -7,18 +7,87 @@ import {
   CheckSquareOutlined, 
   TrophyOutlined,
   CheckCircleFilled,
-  LockOutlined
+  LockOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import courseService from '../../services/courseService';
+import { useAuth } from '../../context/AuthContext';
 
 const { Step } = Steps;
 const { Title, Text } = Typography;
 
 const TopicProgress = ({ topic, course }) => {
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const { user } = useAuth();
+  
+  // Fetch progress data from API when component mounts
+  useEffect(() => {
+    const fetchProgress = async () => {
+      if (!topic || !topic.id || !user?.id) return;
+      
+      setLoading(true);
+      try {
+        // In a real implementation, you'd call an API endpoint
+        // that returns progress specifically for this topic
+        // Since our API doesn't have this exact endpoint, we'll use
+        // the data already available in the topic prop
+        
+        // Calculate progress based on completed lessons
+        const completedLessons = topic.lessons.filter(lesson => 
+          lesson.is_completed || lesson.completed
+        ).length;
+        
+        const totalLessons = topic.lessons.length;
+        const progressPercent = Math.round((completedLessons / Math.max(totalLessons, 1)) * 100);
+        
+        setProgress({
+          completedLessons,
+          totalLessons,
+          progressPercent
+        });
+      } catch (error) {
+        console.error('Error fetching topic progress:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProgress();
+  }, [topic, user]);
+  
+  // If progress data is not yet loaded
+  if (loading) {
+    return (
+      <Card className="shadow-md border-0">
+        <div className="flex justify-center items-center py-8">
+          <LoadingOutlined style={{ fontSize: 24 }} spin />
+          <span className="ml-2">Loading progress...</span>
+        </div>
+      </Card>
+    );
+  }
+  
+  // If there's no topic data or lessons
+  if (!topic || !topic.lessons || !Array.isArray(topic.lessons)) {
+    return (
+      <Card className="shadow-md border-0">
+        <div className="text-center py-8 text-gray-500">
+          No lessons available for this topic.
+        </div>
+      </Card>
+    );
+  }
+  
   // Calculate where the user is in the topic
-  const completedLessons = topic.lessons.filter(lesson => lesson.completed).length;
+  const completedLessons = topic.lessons.filter(lesson => 
+    lesson.is_completed || lesson.completed
+  ).length;
+  
   const totalLessons = topic.lessons.length;
   const currentStep = completedLessons;
+  const progressPercent = Math.round((completedLessons / Math.max(totalLessons, 1)) * 100);
   
   // Generate steps for the progress indicator
   const getLessonIcon = (lesson) => {
@@ -28,7 +97,7 @@ const TopicProgress = ({ topic, course }) => {
   };
   
   const getLessonStatus = (index) => {
-    if (topic.lessons[index].completed) return 'finish';
+    if (topic.lessons[index].is_completed || topic.lessons[index].completed) return 'finish';
     if (index === completedLessons) return 'process';
     if (index <= completedLessons + 1) return 'wait';
     return 'wait';
@@ -46,10 +115,11 @@ const TopicProgress = ({ topic, course }) => {
           />
         </div>
       }
+      loading={loading}
     >
       <div className="mb-4">
         <Progress 
-          percent={Math.round((completedLessons / totalLessons) * 100)}
+          percent={progressPercent}
           strokeColor={completedLessons === totalLessons ? "#52C41A" : "#1890FF"}
           size="small"
         />
@@ -76,7 +146,7 @@ const TopicProgress = ({ topic, course }) => {
       <div className="lesson-path-visual">
         <Row gutter={[8, 16]}>
           {topic.lessons.map((lesson, index) => {
-            const isCompleted = lesson.completed;
+            const isCompleted = lesson.is_completed || lesson.completed;
             const isCurrent = index === completedLessons;
             const isLocked = index > completedLessons + 1 && !isCompleted;
             

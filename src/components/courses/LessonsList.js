@@ -1,7 +1,7 @@
 // src/components/courses/LessonsList.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Tag, Tooltip, Card, Typography, Progress } from 'antd';
+import { Tag, Tooltip, Card, Typography, Progress, Spin } from 'antd';
 import { 
   LockOutlined, 
   CheckCircleOutlined,
@@ -10,13 +10,49 @@ import {
   QuestionCircleOutlined,
   ClockCircleOutlined,
   CodeOutlined,
-  RightOutlined
+  RightOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
+import courseService from '../../services/courseService';
 
 const { Text } = Typography;
 
 const LessonsList = ({ course, topic }) => {
+  const [lessons, setLessons] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+
+  // Fetch lessons data from the API
+  useEffect(() => {
+    const fetchLessons = async () => {
+      // If we already have lessons from the topic prop, use them
+      if (topic && topic.lessons && Array.isArray(topic.lessons) && topic.lessons.length > 0) {
+        setLessons(topic.lessons);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        // Fetch topic details which includes lessons
+        const topicData = await courseService.getTopicById(topic.id, user?.id);
+        
+        if (topicData && topicData.lessons && Array.isArray(topicData.lessons)) {
+          setLessons(topicData.lessons);
+        }
+      } catch (error) {
+        console.error('Error fetching lessons:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (topic && topic.id) {
+      fetchLessons();
+    }
+  }, [topic, user]);
+
   // Add debugging in development
   React.useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
@@ -27,6 +63,15 @@ const LessonsList = ({ course, topic }) => {
       });
     }
   }, [course, topic]);
+
+  // Show loading spinner
+  if (loading) {
+    return (
+      <div className="flex justify-center py-6">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+      </div>
+    );
+  }
 
   // Check if lessons exist
   if (!topic || !topic.lessons || !Array.isArray(topic.lessons) || topic.lessons.length === 0) {
@@ -59,7 +104,9 @@ const LessonsList = ({ course, topic }) => {
   
   // Get estimated time based on lesson type
   const getLessonTime = (lesson) => {
-    if (lesson.type === 'quiz') {
+    if (lesson.estimated_time_minutes) {
+      return `~${lesson.estimated_time_minutes} min`;
+    } else if (lesson.type === 'quiz') {
       return '~15 min';
     } else if (lesson.type === 'coding') {
       return '~20 min';
