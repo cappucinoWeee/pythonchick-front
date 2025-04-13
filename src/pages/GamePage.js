@@ -75,7 +75,7 @@ const GamePage = () => {
         'print("Let\'s start coding")',
         "print(Let's start coding)",
         'Print("Let\'s start coding")',
-        'print(\'Let\'s start coding")',
+        "print('Let's start coding\")",
       ],
       correctAnswer: 0,
       hint: 'Look for matching quotes and correct capitalization',
@@ -254,7 +254,11 @@ const GamePage = () => {
         is_completed: false,
         current_level: currentStep,
         score: xp,
-        data: { character: selectedCharacter?.id, environment: selectedEnvironment?.id, hearts: newHearts },
+        data: {
+          character: selectedCharacter?.id,
+          environment: selectedEnvironment?.id,
+          hearts: newHearts,
+        },
       });
 
       if (newHearts <= 0) {
@@ -410,7 +414,9 @@ const GamePage = () => {
                   </div>
                   {currentChallenge.expectedOutput && (
                     <div className="mt-2">
-                      <Text type="secondary">Expected output: {currentChallenge.expectedOutput}</Text>
+                      <Text type="secondary">
+                        Expected output: {currentChallenge.expectedOutput}
+                      </Text>
                     </div>
                   )}
                 </div>

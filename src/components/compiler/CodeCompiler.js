@@ -1,28 +1,28 @@
 // src/components/compiler/CodeCompiler.js
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Alert, Tabs, Input, Space, Divider, message, Spin } from 'antd';
-import { 
-  PlayCircleOutlined, 
-  CheckOutlined, 
+import {
+  PlayCircleOutlined,
+  CheckOutlined,
   ReloadOutlined,
   CodeOutlined,
   LoadingOutlined,
   SaveOutlined,
-  CopyOutlined
+  CopyOutlined,
 } from '@ant-design/icons';
 import codeService from '../../services/codeService';
 
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
-const CodeCompiler = ({ 
-  initialCode = '# Write your code here\n', 
-  expectedOutput = '', 
+const CodeCompiler = ({
+  initialCode = '# Write your code here\n',
+  expectedOutput = '',
   onSuccess = () => {},
   onError = () => {},
   readOnly = false,
   saveEnabled = false,
-  title = ''
+  title = '',
 }) => {
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState('');
@@ -30,7 +30,7 @@ const CodeCompiler = ({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState('code');
-  
+
   // Reset code if initialCode prop changes
   useEffect(() => {
     setCode(initialCode);
@@ -38,28 +38,28 @@ const CodeCompiler = ({
     setError('');
     setSuccess(false);
   }, [initialCode]);
-  
+
   const runCode = async () => {
     setLoading(true);
     setError('');
     setOutput('');
     setSuccess(false);
-    
+
     try {
       // Call the API to execute the code
       const result = await codeService.executeCode(code, expectedOutput);
-      
+
       setOutput(result.output || '');
-      
+
       if (result.error) {
         setError(result.error);
         onError(result.error);
       }
-      
+
       // Check if the output matches the expected output
       if (expectedOutput && result.success) {
         const outputMatches = expectedOutput.trim() === result.output.trim();
-        
+
         if (outputMatches) {
           setSuccess(true);
           onSuccess(code);
@@ -70,25 +70,25 @@ const CodeCompiler = ({
       } else if (result.success) {
         message.success('Code executed successfully!');
       }
-      
+
       // Switch to output tab to see results
       setActiveTab('output');
     } catch (err) {
       console.error('Code execution error:', err);
-      
+
       // Handle different error types
       if (err.response && err.response.data) {
         setError(err.response.data.detail || 'Error executing code. Please try again.');
       } else {
         setError('An error occurred while executing the code. Please try again.');
       }
-      
+
       onError(err);
     } finally {
       setLoading(false);
     }
   };
-  
+
   const resetCode = () => {
     setCode(initialCode);
     setOutput('');
@@ -96,15 +96,15 @@ const CodeCompiler = ({
     setSuccess(false);
     setActiveTab('code');
   };
-  
+
   const copyCode = () => {
     navigator.clipboard.writeText(code);
     message.success('Code copied to clipboard!');
   };
-  
+
   const saveCode = async () => {
     if (!saveEnabled) return;
-    
+
     try {
       // Show a success message as this is just a mockup
       message.success('Code saved successfully!');
@@ -112,12 +112,16 @@ const CodeCompiler = ({
       message.error('Failed to save code. Please try again.');
     }
   };
-  
+
   return (
     <Card className="compiler-card" title={title}>
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <TabPane 
-          tab={<span><CodeOutlined /> Code</span>}
+        <TabPane
+          tab={
+            <span>
+              <CodeOutlined /> Code
+            </span>
+          }
           key="code"
         >
           <div className="compiler-code-container">
@@ -132,8 +136,12 @@ const CodeCompiler = ({
             />
           </div>
         </TabPane>
-        <TabPane 
-          tab={<span><PlayCircleOutlined /> Output</span>}
+        <TabPane
+          tab={
+            <span>
+              <PlayCircleOutlined /> Output
+            </span>
+          }
           key="output"
         >
           <div className="compiler-output-container">
@@ -151,11 +159,9 @@ const CodeCompiler = ({
                   </div>
                 )}
                 <Divider>Your Output</Divider>
-                {output && (
-                  <pre className="code-output p-2 bg-gray-50 rounded">{output}</pre>
-                )}
+                {output && <pre className="code-output p-2 bg-gray-50 rounded">{output}</pre>}
                 {error && (
-                  <Alert 
+                  <Alert
                     message="Error"
                     description={<pre className="error-output">{error}</pre>}
                     type="error"
@@ -181,42 +187,30 @@ const CodeCompiler = ({
           </div>
         </TabPane>
       </Tabs>
-      
+
       <div className="mt-4 flex justify-between">
         <Space>
-          <Button 
-            type="primary" 
-            icon={<PlayCircleOutlined />} 
+          <Button
+            type="primary"
+            icon={<PlayCircleOutlined />}
             onClick={runCode}
             loading={loading}
             disabled={readOnly}
           >
             Run Code
           </Button>
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={resetCode}
-            disabled={readOnly || loading}
-          >
+          <Button icon={<ReloadOutlined />} onClick={resetCode} disabled={readOnly || loading}>
             Reset
           </Button>
         </Space>
-        
+
         <Space>
           {saveEnabled && (
-            <Button 
-              icon={<SaveOutlined />} 
-              onClick={saveCode}
-              disabled={loading}
-            >
+            <Button icon={<SaveOutlined />} onClick={saveCode} disabled={loading}>
               Save
             </Button>
           )}
-          <Button 
-            icon={<CopyOutlined />} 
-            onClick={copyCode}
-            disabled={loading}
-          >
+          <Button icon={<CopyOutlined />} onClick={copyCode} disabled={loading}>
             Copy
           </Button>
         </Space>

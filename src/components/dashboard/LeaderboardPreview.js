@@ -51,11 +51,15 @@ const leaderboardData = [
 
 const LeaderboardPreview = () => {
   const getRankColor = (rank) => {
-    switch(rank) {
-      case 1: return 'gold';
-      case 2: return 'silver';
-      case 3: return '#CD7F32'; // bronze
-      default: return null;
+    switch (rank) {
+      case 1:
+        return 'gold';
+      case 2:
+        return 'silver';
+      case 3:
+        return '#CD7F32'; // bronze
+      default:
+        return null;
     }
   };
 
@@ -71,12 +75,12 @@ const LeaderboardPreview = () => {
   const renderRank = (rank) => {
     const color = getRankColor(rank);
     const bgColor = getRankBgColor(rank);
-    
+
     return (
       <div className="flex items-center justify-center">
         {color ? (
-          <div 
-            className="flex items-center justify-center w-8 h-8 rounded-full" 
+          <div
+            className="flex items-center justify-center w-8 h-8 rounded-full"
             style={{ backgroundColor: bgColor }}
           >
             <TrophyOutlined style={{ color }} />
@@ -91,16 +95,14 @@ const LeaderboardPreview = () => {
   // User column renderer
   const renderUser = (name, record) => (
     <div className="flex items-center">
-      <Avatar 
-        src={record.avatar} 
-        className="mr-2" 
-        icon={<UserOutlined />}
-      />
+      <Avatar src={record.avatar} className="mr-2" icon={<UserOutlined />} />
       <div>
         <div className={record.isCurrentUser ? 'font-bold text-primary' : 'font-medium'}>
           {name}
           {record.isCurrentUser && (
-            <Tag color="blue" className="ml-2">You</Tag>
+            <Tag color="blue" className="ml-2">
+              You
+            </Tag>
           )}
         </div>
       </div>
@@ -140,37 +142,35 @@ const LeaderboardPreview = () => {
       key: 'xp',
       width: 100,
       align: 'right',
-      render: (xp) => (
-        <span className="font-medium">{xp} XP</span>
-      ),
+      render: (xp) => <span className="font-medium">{xp} XP</span>,
     },
   ];
 
   return (
-    <Card 
-      className="shadow-md border-0" 
+    <Card
+      className="shadow-md border-0"
       title={
         <div className="flex items-center">
           <TrophyOutlined className="text-yellow-500 mr-2" />
           <span className="font-medium">Leaderboard</span>
         </div>
       }
-      extra={<Link to="/leaderboard" className="text-primary">View Full Ranking</Link>}
+      extra={
+        <Link to="/leaderboard" className="text-primary">
+          View Full Ranking
+        </Link>
+      }
     >
-      <Table 
+      <Table
         dataSource={leaderboardData}
         columns={columns}
         pagination={false}
-        rowClassName={(record) => record.isCurrentUser ? 'bg-blue-50' : ''}
+        rowClassName={(record) => (record.isCurrentUser ? 'bg-blue-50' : '')}
         size="middle"
       />
-      
+
       <div className="mt-4 flex justify-center">
-        <Button 
-          type="default" 
-          icon={<RiseOutlined />}
-          className="rounded-lg"
-        >
+        <Button type="default" icon={<RiseOutlined />} className="rounded-lg">
           <Link to="/leaderboard">Compete with Friends</Link>
         </Button>
       </div>

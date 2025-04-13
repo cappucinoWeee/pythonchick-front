@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Initialize user state from localStorage on app load
   useEffect(() => {
     const initializeAuth = async () => {
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
         // Check if user is already logged in
         if (authService.isAuthenticated()) {
           const storedUser = authService.getCurrentUser();
-          
+
           if (storedUser) {
             // Optionally fetch fresh user data from API
             try {
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
                 experience: userData.experience || 0,
                 coins: userData.coins || 0,
                 streak: userData.streak || 0,
-                rank: userData.rank || 1
+                rank: userData.rank || 1,
               });
             } catch (error) {
               console.warn('Could not get fresh user data, using stored data', error);
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
                 experience: storedUser.experience || 0,
                 coins: storedUser.coins || 0,
                 streak: storedUser.streak || 0,
-                rank: storedUser.rank || 1
+                rank: storedUser.rank || 1,
               });
             }
           }
@@ -55,18 +55,18 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    
+
     initializeAuth();
   }, []);
-  
+
   // Login function
   const login = async (credentials) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const authData = await authService.login(credentials);
-      
+
       // Get full user profile
       let userData;
       try {
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
           username: authData.username,
         };
       }
-      
+
       // Set the user data with defaults for UI
       setUser({
         ...userData,
@@ -87,9 +87,9 @@ export const AuthProvider = ({ children }) => {
         experience: userData.experience || 0,
         coins: userData.coins || 0,
         streak: userData.streak || 0,
-        rank: userData.rank || 1
+        rank: userData.rank || 1,
       });
-      
+
       message.success('Login successful!');
       return authData;
     } catch (error) {
@@ -99,12 +99,12 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+
   // Register function
   const register = async (userData) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const result = await authService.register(userData);
       message.success('Registration successful! You can now log in.');
@@ -116,24 +116,24 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+
   // Logout function
   const logout = () => {
     authService.logout();
     setUser(null);
     message.info('You have been logged out.');
   };
-  
+
   // Update user profile
   const updateProfile = async (userId, profileData) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const updatedUser = await authService.updateProfile(userId, profileData);
       setUser((prevUser) => ({
         ...prevUser,
-        ...updatedUser
+        ...updatedUser,
       }));
       message.success('Profile updated successfully!');
       return updatedUser;
@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+
   // Context value
   const value = {
     user,
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }) => {
     updateProfile,
     isAuthenticated: authService.isAuthenticated,
   };
-  
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

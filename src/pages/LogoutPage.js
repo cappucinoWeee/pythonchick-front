@@ -15,7 +15,7 @@ const LogoutPage = () => {
       try {
         // Call logout method from AuthContext
         logout();
-        
+
         // Redirect to landing page after a short delay
         setTimeout(() => {
           navigate('/');
@@ -26,7 +26,7 @@ const LogoutPage = () => {
         navigate('/');
       }
     };
-    
+
     performLogout();
   }, [logout, navigate]);
 
@@ -37,8 +37,8 @@ const LogoutPage = () => {
         title="You've been logged out"
         subTitle="Thank you for using Pythonchick. We hope to see you again soon!"
         extra={
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             onClick={() => navigate('/')}
             style={{ backgroundColor: '#FF8C00', borderColor: '#FF8C00' }}
           >

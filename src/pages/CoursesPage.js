@@ -11,14 +11,14 @@ const { Title, Paragraph } = Typography;
 const CoursesPage = () => {
   const { courses, loading, error, fetchCourses } = useAppContext();
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // Handle manual refresh
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchCourses();
     setRefreshing(false);
   };
-  
+
   return (
     <div className="courses-page pb-6">
       <Breadcrumb className="mb-4">
@@ -31,15 +31,11 @@ const CoursesPage = () => {
           <BookOutlined /> Courses
         </Breadcrumb.Item>
       </Breadcrumb>
-      
+
       <div className="flex justify-between items-center mb-6">
         <Title level={2}>My Courses</Title>
         <div className="flex space-x-2">
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={handleRefresh} 
-            loading={refreshing}
-          >
+          <Button icon={<ReloadOutlined />} onClick={handleRefresh} loading={refreshing}>
             Refresh
           </Button>
           <Button type="primary" icon={<PlusOutlined />}>
@@ -47,7 +43,7 @@ const CoursesPage = () => {
           </Button>
         </div>
       </div>
-      
+
       {error && (
         <Alert
           message="Error Loading Courses"
@@ -62,7 +58,7 @@ const CoursesPage = () => {
           }
         />
       )}
-      
+
       {loading ? (
         <div className="text-center my-12">
           <Spin size="large" tip="Loading courses..." />

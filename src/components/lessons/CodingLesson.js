@@ -1,14 +1,14 @@
 // src/components/lessons/CodingLesson.js
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Alert, Space, Typography, Tooltip, Row, Col, Badge, Spin } from 'antd';
-import { 
-  CheckOutlined, 
+import {
+  CheckOutlined,
   ArrowRightOutlined,
   InfoCircleOutlined,
   BulbOutlined,
   QuestionOutlined,
   FileTextOutlined,
-  LoadingOutlined
+  LoadingOutlined,
 } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
@@ -26,15 +26,15 @@ const CodingLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
   const [taskDescription, setTaskDescription] = useState('');
   const [expectedOutput, setExpectedOutput] = useState('');
   const [hints, setHints] = useState([]);
-  
+
   useEffect(() => {
     // Update completion status when lesson prop changes
     setIsCompleted(lesson.is_completed || false);
-    
+
     // Process the lesson data
     const processLessonData = async () => {
       setLoading(true);
-      
+
       try {
         // Set task description if available
         if (lesson.task) {
@@ -48,29 +48,29 @@ Write Python code to solve the following challenge:
 Write a simple "Hello, World!" program that prints a greeting message.
           `);
         }
-        
+
         // Set expected output if available
         if (lesson.expected_output) {
           setExpectedOutput(lesson.expected_output);
         } else {
-          setExpectedOutput("Hello, World!");
+          setExpectedOutput('Hello, World!');
         }
-        
+
         // Set initial code if available
         if (lesson.initial_code) {
           setInitialCode(lesson.initial_code);
         } else {
           setInitialCode('# Write your code here\n\n# Print a greeting message\n');
         }
-        
+
         // Set hints if available
         if (lesson.hints && Array.isArray(lesson.hints)) {
           setHints(lesson.hints);
         } else {
           setHints([
-            "Remember to use the print() function to display output",
-            "Your output should match the expected output exactly",
-            "Pay attention to spacing and punctuation"
+            'Remember to use the print() function to display output',
+            'Your output should match the expected output exactly',
+            'Pay attention to spacing and punctuation',
           ]);
         }
       } catch (error) {
@@ -79,10 +79,10 @@ Write a simple "Hello, World!" program that prints a greeting message.
         setLoading(false);
       }
     };
-    
+
     processLessonData();
   }, [lesson]);
-  
+
   const handleSuccess = async (code) => {
     setIsCompleting(true);
     try {
@@ -95,7 +95,7 @@ Write a simple "Hello, World!" program that prints a greeting message.
       setIsCompleting(false);
     }
   };
-  
+
   const handleMarkAsCompleted = async () => {
     setIsCompleting(true);
     try {
@@ -108,11 +108,11 @@ Write a simple "Hello, World!" program that prints a greeting message.
       setIsCompleting(false);
     }
   };
-  
+
   const handleNextLesson = () => {
     onNextLesson && onNextLesson();
   };
-  
+
   const getNextHint = () => {
     if (currentHint < hints.length - 1) {
       setCurrentHint(currentHint + 1);
@@ -121,7 +121,7 @@ Write a simple "Hello, World!" program that prints a greeting message.
     }
     setShowHint(true);
   };
-  
+
   if (loading) {
     return (
       <Card className="shadow-card">
@@ -131,13 +131,13 @@ Write a simple "Hello, World!" program that prints a greeting message.
       </Card>
     );
   }
-  
+
   return (
     <div className="coding-lesson">
       <Row gutter={[24, 24]}>
         <Col xs={24} lg={12}>
-          <Card 
-            className="shadow-md border-0 h-full" 
+          <Card
+            className="shadow-md border-0 h-full"
             title={
               <div className="flex items-center">
                 <FileTextOutlined className="text-blue-500 mr-2" />
@@ -148,7 +148,7 @@ Write a simple "Hello, World!" program that prints a greeting message.
             <div className="p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto">
               <ReactMarkdown>{taskDescription}</ReactMarkdown>
             </div>
-            
+
             {showHint && hints.length > 0 && (
               <Alert
                 message="Hint"
@@ -166,23 +166,19 @@ Write a simple "Hello, World!" program that prints a greeting message.
                 onClose={() => setShowHint(false)}
               />
             )}
-            
+
             {!showHint && hints.length > 0 && (
               <div className="mt-4 text-center">
-                <Button 
-                  type="dashed" 
-                  icon={<BulbOutlined />} 
-                  onClick={() => setShowHint(true)}
-                >
+                <Button type="dashed" icon={<BulbOutlined />} onClick={() => setShowHint(true)}>
                   Show Hint
                 </Button>
               </div>
             )}
           </Card>
         </Col>
-        
+
         <Col xs={24} lg={12}>
-          <CodeCompiler 
+          <CodeCompiler
             initialCode={initialCode}
             expectedOutput={expectedOutput}
             onSuccess={handleSuccess}
@@ -190,7 +186,7 @@ Write a simple "Hello, World!" program that prints a greeting message.
           />
         </Col>
       </Row>
-      
+
       {isCompleted && (
         <Card className="mt-6 shadow-md border-0">
           <div className="flex items-start">
@@ -198,7 +194,9 @@ Write a simple "Hello, World!" program that prints a greeting message.
               <CheckOutlined className="text-2xl text-green-500" />
             </div>
             <div>
-              <Title level={4} className="text-green-600 mb-1">Great Job!</Title>
+              <Title level={4} className="text-green-600 mb-1">
+                Great Job!
+              </Title>
               <Text className="text-gray-600 block mb-2">
                 Your solution works correctly. You've completed this coding exercise!
               </Text>
@@ -210,15 +208,12 @@ Write a simple "Hello, World!" program that prints a greeting message.
           </div>
         </Card>
       )}
-      
+
       {isCompleted && (
         <div className="mt-4 text-center">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Button 
-              type="primary" 
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <Button
+              type="primary"
               icon={<ArrowRightOutlined />}
               onClick={handleNextLesson}
               size="large"
@@ -228,14 +223,10 @@ Write a simple "Hello, World!" program that prints a greeting message.
           </motion.div>
         </div>
       )}
-      
+
       {!isCompleted && (
         <div className="mt-4 text-center">
-          <Button 
-            type="link" 
-            onClick={handleMarkAsCompleted}
-            loading={isCompleting}
-          >
+          <Button type="link" onClick={handleMarkAsCompleted} loading={isCompleting}>
             Skip & Mark Completed
           </Button>
         </div>

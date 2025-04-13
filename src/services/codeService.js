@@ -6,18 +6,18 @@ const codeService = {
   executeCode: async (code, expectedOutput = null) => {
     try {
       const payload = {
-        code: code
+        code: code,
       };
-      
+
       if (expectedOutput !== null) {
         payload.expected_output = expectedOutput;
       }
-      
+
       const response = await apiClient.post('/code/execute', payload);
       return response.data;
     } catch (error) {
       console.error('Code execution error:', error);
-      
+
       // Fallback for development if API is not available
       if (process.env.NODE_ENV === 'development') {
         // Simulate API response for testing
@@ -26,24 +26,24 @@ const codeService = {
         return {
           execution_id: `mock-${Date.now()}`,
           success: mockSuccess,
-          output: mockSuccess ? (expectedOutput || "Hello, World!") : "",
-          error: mockSuccess ? "" : "There was an error in your code",
+          output: mockSuccess ? expectedOutput || 'Hello, World!' : '',
+          error: mockSuccess ? '' : 'There was an error in your code',
           execution_time: Math.random() * 0.5,
-          matches_expected: mockSuccess && expectedOutput ? true : false
+          matches_expected: mockSuccess && expectedOutput ? true : false,
         };
       }
-      
+
       throw error;
     }
   },
-  
+
   // Save code snippet
   saveCodeSnippet: async (title, code, description = '') => {
     try {
       const response = await apiClient.post('/code/save', {
         title,
         code,
-        description
+        description,
       });
       return response.data;
     } catch (error) {
@@ -51,7 +51,7 @@ const codeService = {
       throw error;
     }
   },
-  
+
   // Get saved code snippets
   getSavedCodeSnippets: async () => {
     try {
@@ -62,7 +62,7 @@ const codeService = {
       throw error;
     }
   },
-  
+
   // Delete code snippet
   deleteCodeSnippet: async (snippetId) => {
     try {
@@ -72,7 +72,7 @@ const codeService = {
       console.error(`Delete snippet ${snippetId} error:`, error);
       throw error;
     }
-  }
+  },
 };
 
 export default codeService;

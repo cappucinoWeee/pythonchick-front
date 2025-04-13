@@ -1,28 +1,28 @@
 // src/pages/CompilerPage.js
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Typography, 
-  Breadcrumb, 
-  Row, 
-  Col, 
+import {
+  Card,
+  Typography,
+  Breadcrumb,
+  Row,
+  Col,
   Button,
   Select,
   Input,
   Divider,
   message,
   Modal,
-  Form
+  Form,
 } from 'antd';
 import { Link } from 'react-router-dom';
-import { 
-  HomeOutlined, 
-  CodeOutlined, 
+import {
+  HomeOutlined,
+  CodeOutlined,
   SaveOutlined,
   CopyOutlined,
   DeleteOutlined,
   DownloadOutlined,
-  PlusOutlined
+  PlusOutlined,
 } from '@ant-design/icons';
 import CodeCompiler from '../components/compiler/CodeCompiler';
 import { useAuth } from '../context/AuthContext';
@@ -37,37 +37,42 @@ const CompilerPage = () => {
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [saveForm] = Form.useForm();
   const [savedSnippets, setSavedSnippets] = useState([]);
-  
+
   // Template options for the Python code
   const templates = {
     empty: '# Write your Python code here\n',
     hello_world: '# Simple Hello World program\n\nprint("Hello, World!")\n',
-    variables: '# Variables and data types\n\nname = "Alice"\nage = 25\nheight = 1.75\n\nprint(f"Name: {name}")\nprint(f"Age: {age}")\nprint(f"Height: {height} meters")\n',
-    functions: '# Function example\n\ndef greet(name):\n    return f"Hello, {name}!"\n\nprint(greet("Python"))\n',
-    loops: '# Loop example\n\nfruits = ["apple", "banana", "cherry"]\n\nfor fruit in fruits:\n    print(f"I like {fruit}s")\n\nfor i in range(5):\n    print(f"Number: {i}")\n',
-    conditionals: '# Conditional statements\n\nage = 18\n\nif age < 13:\n    print("Child")\nelif age < 18:\n    print("Teenager")\nelse:\n    print("Adult")\n',
-    lists: '# Working with lists\n\nnumbers = [1, 2, 3, 4, 5]\n\n# Add to the list\nnumbers.append(6)\n\n# Sum all numbers\ntotal = sum(numbers)\n\nprint(f"Numbers: {numbers}")\nprint(f"Total: {total}")\n',
+    variables:
+      '# Variables and data types\n\nname = "Alice"\nage = 25\nheight = 1.75\n\nprint(f"Name: {name}")\nprint(f"Age: {age}")\nprint(f"Height: {height} meters")\n',
+    functions:
+      '# Function example\n\ndef greet(name):\n    return f"Hello, {name}!"\n\nprint(greet("Python"))\n',
+    loops:
+      '# Loop example\n\nfruits = ["apple", "banana", "cherry"]\n\nfor fruit in fruits:\n    print(f"I like {fruit}s")\n\nfor i in range(5):\n    print(f"Number: {i}")\n',
+    conditionals:
+      '# Conditional statements\n\nage = 18\n\nif age < 13:\n    print("Child")\nelif age < 18:\n    print("Teenager")\nelse:\n    print("Adult")\n',
+    lists:
+      '# Working with lists\n\nnumbers = [1, 2, 3, 4, 5]\n\n# Add to the list\nnumbers.append(6)\n\n# Sum all numbers\ntotal = sum(numbers)\n\nprint(f"Numbers: {numbers}")\nprint(f"Total: {total}")\n',
   };
-  
+
   // Handle template selection
   const handleTemplateChange = (template) => {
     setCode(templates[template]);
     message.info(`${template.replace('_', ' ')} template loaded`);
   };
-  
+
   // Handle saving code
   const handleSaveCode = () => {
     setSaveModalVisible(true);
     saveForm.setFieldsValue({
       title: fileName.replace('.py', ''),
-      description: ''
+      description: '',
     });
   };
-  
+
   // Handle download code
   const handleDownloadCode = () => {
     const element = document.createElement('a');
-    const file = new Blob([code], {type: 'text/plain'});
+    const file = new Blob([code], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
     element.download = fileName;
     document.body.appendChild(element);
@@ -75,37 +80,38 @@ const CompilerPage = () => {
     document.body.removeChild(element);
     message.success(`Code downloaded as ${fileName}`);
   };
-  
+
   // Handle copy code to clipboard
   const handleCopyCode = () => {
     navigator.clipboard.writeText(code);
     message.success('Code copied to clipboard!');
   };
-  
+
   // Handle submission of the save modal
   const handleSaveConfirm = () => {
-    saveForm.validateFields()
-      .then(values => {
+    saveForm
+      .validateFields()
+      .then((values) => {
         // In a real app, you'd call an API to save this
         const newSnippet = {
           id: Date.now().toString(),
           title: values.title,
           description: values.description,
           code,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         };
-        
+
         setSavedSnippets([...savedSnippets, newSnippet]);
         setSaveModalVisible(false);
         saveForm.resetFields();
         setFileName(`${values.title}.py`);
         message.success('Code saved successfully!');
       })
-      .catch(errorInfo => {
+      .catch((errorInfo) => {
         console.log('Validation failed:', errorInfo);
       });
   };
-  
+
   return (
     <div className="compiler-page pb-6">
       <Breadcrumb className="mb-4">
@@ -118,7 +124,7 @@ const CompilerPage = () => {
           <CodeOutlined /> Python Compiler
         </Breadcrumb.Item>
       </Breadcrumb>
-      
+
       <Card className="shadow-md border-0 mb-6">
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div>
@@ -127,36 +133,24 @@ const CompilerPage = () => {
               Write, run and test your Python code in real-time
             </Paragraph>
           </div>
-          
+
           <div className="flex items-center space-x-2 flex-wrap gap-2">
-            <Input 
-              placeholder="File name" 
+            <Input
+              placeholder="File name"
               value={fileName}
               onChange={(e) => setFileName(e.target.value)}
               style={{ width: 200 }}
               suffix=".py"
             />
-            <Button 
-              icon={<SaveOutlined />} 
-              onClick={handleSaveCode}
-              title="Save code"
-            >
+            <Button icon={<SaveOutlined />} onClick={handleSaveCode} title="Save code">
               Save
             </Button>
-            <Button 
-              icon={<DownloadOutlined />} 
-              onClick={handleDownloadCode}
-              title="Download code"
-            >
+            <Button icon={<DownloadOutlined />} onClick={handleDownloadCode} title="Download code">
               Download
             </Button>
-            <Button 
-              icon={<CopyOutlined />} 
-              onClick={handleCopyCode}
-              title='Copy code'
-            />
-            <Button 
-              icon={<DeleteOutlined />} 
+            <Button icon={<CopyOutlined />} onClick={handleCopyCode} title="Copy code" />
+            <Button
+              icon={<DeleteOutlined />}
               onClick={() => {
                 setCode(templates.empty);
                 message.info('Code cleared');
@@ -168,7 +162,7 @@ const CompilerPage = () => {
           </div>
         </div>
       </Card>
-      
+
       <Row gutter={[24, 24]}>
         <Col xs={24} md={6}>
           <Card className="shadow-md border-0 h-full">
@@ -176,7 +170,7 @@ const CompilerPage = () => {
             <Paragraph className="text-gray-600 mb-4">
               Start with a template or create your own code from scratch
             </Paragraph>
-            
+
             <Select
               placeholder="Select a template"
               className="w-full mb-4"
@@ -190,9 +184,9 @@ const CompilerPage = () => {
               <Option value="conditionals">Conditionals</Option>
               <Option value="lists">Lists</Option>
             </Select>
-            
+
             <Divider />
-            
+
             <Title level={5}>Tips</Title>
             <ul className="text-sm text-gray-600 list-disc pl-4">
               <li className="mb-1">Use print() to display output</li>
@@ -201,16 +195,16 @@ const CompilerPage = () => {
               <li className="mb-1">Your code will timeout after 5 seconds</li>
               <li className="mb-1">Use the Run button to execute your code</li>
             </ul>
-            
+
             {savedSnippets.length > 0 && (
               <>
                 <Divider />
-                
+
                 <Title level={5}>Saved Snippets</Title>
                 <div className="max-h-60 overflow-y-auto">
-                  {savedSnippets.map(snippet => (
-                    <div 
-                      key={snippet.id} 
+                  {savedSnippets.map((snippet) => (
+                    <div
+                      key={snippet.id}
                       className="p-3 border rounded-lg mb-2 cursor-pointer hover:bg-gray-50"
                       onClick={() => {
                         setCode(snippet.code);
@@ -229,9 +223,9 @@ const CompilerPage = () => {
             )}
           </Card>
         </Col>
-        
+
         <Col xs={24} md={18}>
-          <CodeCompiler 
+          <CodeCompiler
             initialCode={code}
             expectedOutput=""
             readOnly={false}
@@ -241,7 +235,7 @@ const CompilerPage = () => {
           />
         </Col>
       </Row>
-      
+
       {/* Save Code Modal */}
       <Modal
         title="Save Code"
@@ -251,10 +245,7 @@ const CompilerPage = () => {
         okText="Save"
         cancelText="Cancel"
       >
-        <Form
-          form={saveForm}
-          layout="vertical"
-        >
+        <Form form={saveForm} layout="vertical">
           <Form.Item
             name="title"
             label="Title"
@@ -262,15 +253,9 @@ const CompilerPage = () => {
           >
             <Input placeholder="Enter a title for your code" />
           </Form.Item>
-          
-          <Form.Item
-            name="description"
-            label="Description (optional)"
-          >
-            <Input.TextArea 
-              placeholder="Enter a description (optional)"
-              rows={3}
-            />
+
+          <Form.Item name="description" label="Description (optional)">
+            <Input.TextArea placeholder="Enter a description (optional)" rows={3} />
           </Form.Item>
         </Form>
       </Modal>

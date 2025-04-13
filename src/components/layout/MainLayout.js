@@ -23,14 +23,11 @@ const MainLayout = () => {
 
   return (
     <Layout className="min-h-screen">
-      <Header 
-        collapsed={collapsed} 
-        toggleMobileSidebar={toggleMobileSidebar} 
-      />
+      <Header collapsed={collapsed} toggleMobileSidebar={toggleMobileSidebar} />
       <Layout>
         {/* Desktop Sidebar */}
         <Sidebar collapsed={collapsed} className="hidden md:block" />
-        
+
         {/* Mobile Sidebar (Drawer) */}
         <Drawer
           placement="left"
@@ -42,7 +39,7 @@ const MainLayout = () => {
         >
           <Sidebar mobile={true} />
         </Drawer>
-        
+
         <Layout>
           <Button
             type="text"
@@ -50,13 +47,12 @@ const MainLayout = () => {
             onClick={toggleSidebar}
             className="fixed left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md rounded-r-md p-2 md:flex hidden"
           />
-          
+
           <Content className="p-4 md:p-6">
             <div className="container mx-auto max-w-7xl">
               <Outlet />
             </div>
           </Content>
-          
         </Layout>
       </Layout>
       <Footer />

@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Dropdown, Badge, Button, Space, Tooltip, Avatar } from 'antd';
-import { 
-  BellOutlined, 
-  UserOutlined, 
+import {
+  BellOutlined,
+  UserOutlined,
   MenuOutlined,
   LogoutOutlined,
   SettingOutlined,
   FireOutlined,
-  CrownOutlined
+  CrownOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 
@@ -32,20 +32,20 @@ const Header = ({ toggleMobileSidebar }) => {
   const menuItems = [
     {
       key: 'dashboard',
-      label: <Link to="/dashboard">Dashboard</Link>
+      label: <Link to="/dashboard">Dashboard</Link>,
     },
     {
       key: 'courses',
-      label: <Link to="/courses">Courses</Link>
+      label: <Link to="/courses">Courses</Link>,
     },
     {
       key: 'leaderboard',
-      label: <Link to="/leaderboard">Leaderboard</Link>
+      label: <Link to="/leaderboard">Leaderboard</Link>,
     },
     {
       key: 'compiler',
-      label: <Link to="/compiler">Compiler</Link>
-    }
+      label: <Link to="/compiler">Compiler</Link>,
+    },
   ];
 
   // Dropdown menu items for user profile
@@ -53,21 +53,21 @@ const Header = ({ toggleMobileSidebar }) => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: <Link to="/profile">Profile</Link>
+      label: <Link to="/profile">Profile</Link>,
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: <Link to="/settings">Settings</Link>
+      label: <Link to="/settings">Settings</Link>,
     },
     {
-      type: 'divider'
+      type: 'divider',
     },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: <span onClick={handleLogout}>Logout</span>
-    }
+      label: <span onClick={handleLogout}>Logout</span>,
+    },
   ];
 
   return (
@@ -87,16 +87,14 @@ const Header = ({ toggleMobileSidebar }) => {
               alt="Pythonchick"
               className="mr-2 w-auto h-8 sm:h-10 md:h-12 transition-all"
             />
-            <span className="text-xl font-display text-primary hidden sm:inline">
-              Pythonchick
-            </span>
+            <span className="text-xl font-display text-primary hidden sm:inline">Pythonchick</span>
           </Link>
         </div>
 
         <div className="flex-1 mx-4 hidden md:block">
-          <Menu 
-            mode="horizontal" 
-            className="border-0" 
+          <Menu
+            mode="horizontal"
+            className="border-0"
             selectedKeys={[activeKey]}
             items={menuItems}
           />
@@ -131,18 +129,10 @@ const Header = ({ toggleMobileSidebar }) => {
             </Badge>
           </Tooltip>
 
-          <Dropdown
-            menu={{ items: dropdownItems }}
-            trigger={['click']}
-            placement="bottomRight"
-          >
+          <Dropdown menu={{ items: dropdownItems }} trigger={['click']} placement="bottomRight">
             <div className="cursor-pointer flex items-center">
               <Badge dot color="green">
-                <Avatar
-                  src={user?.avatar}
-                  icon={<UserOutlined />}
-                  size={32}
-                />
+                <Avatar src={user?.avatar} icon={<UserOutlined />} size={32} />
               </Badge>
             </div>
           </Dropdown>

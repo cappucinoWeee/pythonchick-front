@@ -1,31 +1,31 @@
 // src/pages/RegisterPage.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Card, 
-  Alert, 
-  Steps, 
-  Typography, 
-  Row, 
-  Col, 
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Alert,
+  Steps,
+  Typography,
+  Row,
+  Col,
   Checkbox,
   Divider,
   Select,
-  message
+  message,
 } from 'antd';
-import { 
-  UserOutlined, 
-  LockOutlined, 
+import {
+  UserOutlined,
+  LockOutlined,
   MailOutlined,
   SmileOutlined,
   SafetyOutlined,
   GoogleOutlined,
   FacebookOutlined,
   GithubOutlined,
-  CheckCircleFilled
+  CheckCircleFilled,
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -43,39 +43,39 @@ const RegisterPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState(null);
-  
+
   // Check if user is already logged in
   useEffect(() => {
     if (isAuthenticated()) {
       navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
-  
+
   const steps = [
     {
       title: 'Role',
-      icon: <UserOutlined />
+      icon: <UserOutlined />,
     },
     {
       title: 'Account',
-      icon: <UserOutlined />
+      icon: <UserOutlined />,
     },
     {
       title: 'Profile',
-      icon: <SmileOutlined />
+      icon: <SmileOutlined />,
     },
     {
       title: 'Complete',
-      icon: <SafetyOutlined />
-    }
+      icon: <SafetyOutlined />,
+    },
   ];
-  
+
   const handleRoleSelect = (role) => {
     setUserRole(role);
     setFormData({ ...formData, role });
     setCurrentStep(1);
   };
-  
+
   // Handle step 1 form submission (previously step 1, now step 2)
   const onFinishStep1 = (values) => {
     // Check if passwords match
@@ -83,36 +83,36 @@ const RegisterPage = () => {
       setError('Passwords do not match!');
       return;
     }
-    
+
     setFormData({ ...formData, ...values });
     setCurrentStep(2);
     setError('');
   };
-  
+
   // Handle step 2 form submission (previously step 2, now step 3)
   const onFinishStep2 = async (values) => {
     try {
       setError('');
-      
+
       // Combine data from all steps
-      const completeData = { 
-        ...formData, 
+      const completeData = {
+        ...formData,
         ...values,
         // Remove confirmPassword as it's not needed by API
-        confirmPassword: undefined
+        confirmPassword: undefined,
       };
-      
+
       // Register user
       await register(completeData);
-      
+
       // Show success message
       message.success('Registration successful! You can now log in.');
-      
+
       // Move to completion step
       setCurrentStep(3);
     } catch (err) {
       console.error('Registration error:', err);
-      
+
       // Handle different error types
       if (err.response && err.response.data) {
         setError(err.response.data.detail || 'Registration failed. Please check your information.');
@@ -121,17 +121,17 @@ const RegisterPage = () => {
       }
     }
   };
-  
+
   const goToLogin = () => {
     navigate('/login');
   };
-  
+
   // Render child-specific profile form
   const renderChildProfileForm = () => (
     <Form
       name="register-step2-child"
       initialValues={{
-        ...formData
+        ...formData,
       }}
       onFinish={onFinishStep2}
       layout="vertical"
@@ -143,8 +143,8 @@ const RegisterPage = () => {
             label="Your Name"
             rules={[{ required: true, message: 'Please enter your name!' }]}
           >
-            <Input 
-              prefix={<UserOutlined className="text-gray-400" />} 
+            <Input
+              prefix={<UserOutlined className="text-gray-400" />}
               placeholder="What should we call you?"
               size="large"
               className="rounded-lg"
@@ -152,7 +152,7 @@ const RegisterPage = () => {
           </Form.Item>
         </Col>
       </Row>
-      
+
       <Row gutter={16}>
         <Col span={24}>
           <Form.Item
@@ -160,19 +160,17 @@ const RegisterPage = () => {
             label="Your Age"
             rules={[{ required: true, message: 'Please select your age!' }]}
           >
-            <Select
-              placeholder="How old are you?"
-              className="w-full"
-              size="large"
-            >
+            <Select placeholder="How old are you?" className="w-full" size="large">
               {[...Array(13)].map((_, i) => (
-                <Option key={i + 5} value={i + 5}>{i + 5} years old</Option>
+                <Option key={i + 5} value={i + 5}>
+                  {i + 5} years old
+                </Option>
               ))}
             </Select>
           </Form.Item>
         </Col>
       </Row>
-      
+
       <Row gutter={16}>
         <Col span={24}>
           <Form.Item
@@ -197,9 +195,9 @@ const RegisterPage = () => {
           </Form.Item>
         </Col>
       </Row>
-      
+
       <Form.Item className="mt-4">
-        <Button 
+        <Button
           type="primary"
           htmlType="submit"
           size="large"
@@ -211,25 +209,21 @@ const RegisterPage = () => {
           Create Account
         </Button>
       </Form.Item>
-      
+
       <Form.Item>
-        <Button 
-          type="link"
-          block
-          onClick={() => setCurrentStep(1)}
-        >
+        <Button type="link" block onClick={() => setCurrentStep(1)}>
           Back to Previous Step
         </Button>
       </Form.Item>
     </Form>
   );
-  
+
   // Render adult-specific profile form
   const renderAdultProfileForm = () => (
     <Form
       name="register-step2-adult"
       initialValues={{
-        ...formData
+        ...formData,
       }}
       onFinish={onFinishStep2}
       layout="vertical"
@@ -241,8 +235,8 @@ const RegisterPage = () => {
             label="Full Name"
             rules={[{ required: true, message: 'Please enter your name!' }]}
           >
-            <Input 
-              prefix={<UserOutlined className="text-gray-400" />} 
+            <Input
+              prefix={<UserOutlined className="text-gray-400" />}
               placeholder="Full Name"
               size="large"
               className="rounded-lg"
@@ -250,13 +244,10 @@ const RegisterPage = () => {
           </Form.Item>
         </Col>
       </Row>
-      
+
       <Row gutter={16}>
         <Col span={24}>
-          <Form.Item
-            name="interests"
-            label="What are you interested in learning?"
-          >
+          <Form.Item name="interests" label="What are you interested in learning?">
             <Select
               mode="multiple"
               placeholder="Select your interests"
@@ -272,18 +263,11 @@ const RegisterPage = () => {
           </Form.Item>
         </Col>
       </Row>
-      
+
       <Row gutter={16}>
         <Col span={24}>
-          <Form.Item
-            name="experience"
-            label="Your coding experience"
-          >
-            <Select
-              placeholder="Select your experience level"
-              className="w-full"
-              size="large"
-            >
+          <Form.Item name="experience" label="Your coding experience">
+            <Select placeholder="Select your experience level" className="w-full" size="large">
               <Option value="beginner">Beginner (No experience)</Option>
               <Option value="some">Some experience (Basic concepts)</Option>
               <Option value="intermediate">Intermediate (Familiar with programming)</Option>
@@ -292,9 +276,9 @@ const RegisterPage = () => {
           </Form.Item>
         </Col>
       </Row>
-      
+
       <Form.Item className="mt-4">
-        <Button 
+        <Button
           type="primary"
           htmlType="submit"
           size="large"
@@ -306,19 +290,15 @@ const RegisterPage = () => {
           Create Account
         </Button>
       </Form.Item>
-      
+
       <Form.Item>
-        <Button 
-          type="link"
-          block
-          onClick={() => setCurrentStep(1)}
-        >
+        <Button type="link" block onClick={() => setCurrentStep(1)}>
           Back to Previous Step
         </Button>
       </Form.Item>
     </Form>
   );
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-3xl">
@@ -329,23 +309,21 @@ const RegisterPage = () => {
         >
           <Card className="shadow-lg border-0">
             <div className="text-center mb-6">
-              <img 
-                src="/logo.png" 
-                alt="Pythonchick" 
-                className="h-16 mx-auto"
-              />
-              <Title level={3} className="font-display text-primary mt-2">Create Your Account</Title>
+              <img src="/logo.png" alt="Pythonchick" className="h-16 mx-auto" />
+              <Title level={3} className="font-display text-primary mt-2">
+                Create Your Account
+              </Title>
               <Text className="text-gray-600 block mb-4">
                 Join thousands of learners on their Python journey
               </Text>
             </div>
-            
+
             <Steps current={currentStep} className="mb-8">
-              {steps.map(step => (
+              {steps.map((step) => (
                 <Step key={step.title} title={step.title} icon={step.icon} />
               ))}
             </Steps>
-            
+
             {error && (
               <Alert
                 message={error}
@@ -356,19 +334,17 @@ const RegisterPage = () => {
                 onClose={() => setError('')}
               />
             )}
-            
-            {currentStep === 0 && (
-              <RoleSelection onRoleSelect={handleRoleSelect} />
-            )}
-            
+
+            {currentStep === 0 && <RoleSelection onRoleSelect={handleRoleSelect} />}
+
             {currentStep === 1 && (
               <>
                 <Form
                   name="register-step1"
                   form={form}
-                  initialValues={{ 
+                  initialValues={{
                     ...formData,
-                    agreement: formData.agreement || true 
+                    agreement: formData.agreement || true,
                   }}
                   onFinish={onFinishStep1}
                   layout="vertical"
@@ -379,42 +355,42 @@ const RegisterPage = () => {
                     rules={[
                       { required: true, message: 'Please enter a username!' },
                       { min: 3, message: 'Username must be at least 3 characters!' },
-                      { 
-                        pattern: /^[a-zA-Z0-9_]+$/, 
-                        message: 'Username can only contain letters, numbers, and underscores!' 
-                      }
+                      {
+                        pattern: /^[a-zA-Z0-9_]+$/,
+                        message: 'Username can only contain letters, numbers, and underscores!',
+                      },
                     ]}
                   >
-                    <Input 
-                      prefix={<UserOutlined className="text-gray-400" />} 
+                    <Input
+                      prefix={<UserOutlined className="text-gray-400" />}
                       placeholder="Username"
                       size="large"
                       className="rounded-lg"
                     />
                   </Form.Item>
-                  
+
                   <Form.Item
                     name="email"
                     label="Email"
                     rules={[
                       { required: true, message: 'Please enter your email!' },
-                      { type: 'email', message: 'Please enter a valid email!' }
+                      { type: 'email', message: 'Please enter a valid email!' },
                     ]}
                   >
-                    <Input 
-                      prefix={<MailOutlined className="text-gray-400" />} 
+                    <Input
+                      prefix={<MailOutlined className="text-gray-400" />}
                       placeholder="Email"
                       size="large"
                       className="rounded-lg"
                     />
                   </Form.Item>
-                  
+
                   <Form.Item
                     name="password"
                     label="Password"
                     rules={[
                       { required: true, message: 'Please enter your password!' },
-                      { min: 8, message: 'Password must be at least 8 characters!' }
+                      { min: 8, message: 'Password must be at least 8 characters!' },
                     ]}
                   >
                     <Input.Password
@@ -424,7 +400,7 @@ const RegisterPage = () => {
                       className="rounded-lg"
                     />
                   </Form.Item>
-                  
+
                   <Form.Item
                     name="confirmPassword"
                     label="Confirm Password"
@@ -448,24 +424,33 @@ const RegisterPage = () => {
                       className="rounded-lg"
                     />
                   </Form.Item>
-                  
-                  <Form.Item 
-                    name="agreement" 
+
+                  <Form.Item
+                    name="agreement"
                     valuePropName="checked"
                     rules={[
-                      { 
+                      {
                         validator: (_, value) =>
-                          value ? Promise.resolve() : Promise.reject(new Error('You must accept the terms and conditions')),
+                          value
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('You must accept the terms and conditions')),
                       },
                     ]}
                   >
                     <Checkbox>
-                      I agree to the <Link to="/terms" className="text-primary">Terms of Service</Link> and <Link to="/privacy" className="text-primary">Privacy Policy</Link>
+                      I agree to the{' '}
+                      <Link to="/terms" className="text-primary">
+                        Terms of Service
+                      </Link>{' '}
+                      and{' '}
+                      <Link to="/privacy" className="text-primary">
+                        Privacy Policy
+                      </Link>
                     </Checkbox>
                   </Form.Item>
-                  
+
                   <Form.Item>
-                    <Button 
+                    <Button
                       type="primary"
                       htmlType="submit"
                       size="large"
@@ -477,40 +462,38 @@ const RegisterPage = () => {
                     </Button>
                   </Form.Item>
                 </Form>
-                
+
                 <Divider>
                   <Text type="secondary">or sign up with</Text>
                 </Divider>
-                
+
                 <div className="flex justify-center space-x-4 mb-6">
-                  <Button 
-                    shape="circle" 
-                    icon={<GoogleOutlined />} 
+                  <Button
+                    shape="circle"
+                    icon={<GoogleOutlined />}
                     size="large"
                     className="flex items-center justify-center"
                   />
-                  <Button 
-                    shape="circle" 
-                    icon={<FacebookOutlined />} 
+                  <Button
+                    shape="circle"
+                    icon={<FacebookOutlined />}
                     size="large"
                     className="flex items-center justify-center"
                   />
-                  <Button 
-                    shape="circle" 
-                    icon={<GithubOutlined />} 
+                  <Button
+                    shape="circle"
+                    icon={<GithubOutlined />}
                     size="large"
                     className="flex items-center justify-center"
                   />
                 </div>
               </>
             )}
-            
+
             {currentStep === 2 && (
-              <>
-                {userRole === 'child' ? renderChildProfileForm() : renderAdultProfileForm()}
-              </>
+              <>{userRole === 'child' ? renderChildProfileForm() : renderAdultProfileForm()}</>
             )}
-            
+
             {currentStep === 3 && (
               <div className="text-center py-8">
                 <motion.div
@@ -521,13 +504,18 @@ const RegisterPage = () => {
                   <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
                     <CheckCircleFilled className="text-4xl text-green-500" />
                   </div>
-                  
-                  <Title level={3} className="mb-2">Registration Successful!</Title>
+
+                  <Title level={3} className="mb-2">
+                    Registration Successful!
+                  </Title>
                   <Paragraph className="text-gray-600 mb-6">
-                    Your account has been created. {userRole === 'child' ? "Let's start your coding adventure!" : "You're ready to start your coding journey!"}
+                    Your account has been created.{' '}
+                    {userRole === 'child'
+                      ? "Let's start your coding adventure!"
+                      : "You're ready to start your coding journey!"}
                   </Paragraph>
-                  
-                  <Button 
+
+                  <Button
                     type="primary"
                     size="large"
                     block
@@ -540,7 +528,7 @@ const RegisterPage = () => {
                 </motion.div>
               </div>
             )}
-            
+
             {currentStep < 3 && (
               <div className="text-center mt-4">
                 <Text className="text-gray-600">Already have an account?</Text>{' '}

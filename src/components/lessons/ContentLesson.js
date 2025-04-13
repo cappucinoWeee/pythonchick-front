@@ -12,19 +12,21 @@ const ContentLesson = ({ course, topic, lesson, onComplete, onNextLesson }) => {
   const [isCompleted, setIsCompleted] = useState(lesson.is_completed || false);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     // Update completion status when lesson prop changes
     setIsCompleted(lesson.is_completed || false);
-    
+
     // Process the lesson content
     if (lesson.content) {
       // If content is an array of objects (from the API)
       if (Array.isArray(lesson.content)) {
-        const markdownContent = lesson.content.map(item => {
-          return `## ${item.title}\n\n${item.description}\n\n${item.image ? `![${item.title}](${item.image})` : ''}`;
-        }).join('\n\n---\n\n');
-        
+        const markdownContent = lesson.content
+          .map((item) => {
+            return `## ${item.title}\n\n${item.description}\n\n${item.image ? `![${item.title}](${item.image})` : ''}`;
+          })
+          .join('\n\n---\n\n');
+
         setContent(markdownContent);
       } else {
         // If content is already markdown or plain text
@@ -59,10 +61,10 @@ print("Hello, World!")
 Try writing your own Python code to print a message.
       `);
     }
-    
+
     setLoading(false);
   }, [lesson]);
-  
+
   const handleMarkAsCompleted = async () => {
     setIsCompleting(true);
     try {
@@ -75,11 +77,11 @@ Try writing your own Python code to print a message.
       setIsCompleting(false);
     }
   };
-  
+
   const handleNextLesson = () => {
     onNextLesson && onNextLesson();
   };
-  
+
   if (loading) {
     return (
       <Card className="shadow-card">
@@ -89,23 +91,23 @@ Try writing your own Python code to print a message.
       </Card>
     );
   }
-  
+
   return (
     <Card className="shadow-card">
       <div className="lesson-content prose max-w-none">
         <ReactMarkdown>{content}</ReactMarkdown>
-        
+
         <Divider />
-        
+
         <div className="mt-6 text-center">
           {!isCompleted ? (
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
-              transition={{ repeat: Infinity, repeatType: "reverse", duration: 1 }}
+              transition={{ repeat: Infinity, repeatType: 'reverse', duration: 1 }}
             >
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 size="large"
                 icon={<CheckOutlined />}
                 onClick={handleMarkAsCompleted}
@@ -123,9 +125,9 @@ Try writing your own Python code to print a message.
                 showIcon
                 className="mb-4"
               />
-              
-              <Button 
-                type="primary" 
+
+              <Button
+                type="primary"
                 size="large"
                 icon={<ArrowRightOutlined />}
                 onClick={handleNextLesson}

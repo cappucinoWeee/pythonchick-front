@@ -7,26 +7,31 @@
 
 @layer base {
   :root {
-    --color-primary: #FF8C00;
-    --color-primary-light: #FFAD4D;
-    --color-primary-dark: #E67E00;
-    --color-secondary: #43A047;
-    --color-secondary-light: #66BB6A;
-    --color-secondary-dark: #2E7D32;
-    --color-background: #F9F9F9;
+    --color-primary: #ff8c00;
+    --color-primary-light: #ffad4d;
+    --color-primary-dark: #e67e00;
+    --color-secondary: #43a047;
+    --color-secondary-light: #66bb6a;
+    --color-secondary-dark: #2e7d32;
+    --color-background: #f9f9f9;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply font-sans bg-background text-gray-800 min-h-screen;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-medium;
   }
 }
@@ -35,63 +40,63 @@
   .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-button hover:shadow-button-hover;
   }
-  
+
   .btn-primary {
     @apply btn bg-primary text-white hover:bg-primary-dark;
   }
-  
+
   .btn-secondary {
     @apply btn bg-secondary text-white hover:bg-secondary-dark;
   }
-  
+
   .btn-outline {
     @apply btn border-2 border-primary text-primary hover:bg-primary hover:text-white;
   }
-  
+
   .card {
     @apply bg-white rounded-xl shadow-card p-6;
   }
-  
+
   .input {
     @apply px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
   }
-  
+
   .shadow-card {
     @apply shadow-md hover:shadow-lg transition-shadow duration-300;
   }
-  
+
   .text-primary {
     @apply text-[var(--color-primary)];
   }
-  
+
   .bg-primary {
     @apply bg-[var(--color-primary)];
   }
-  
+
   .bg-primary-light {
     @apply bg-[var(--color-primary-light)];
   }
-  
+
   .bg-primary-dark {
     @apply bg-[var(--color-primary-dark)];
   }
-  
+
   .text-secondary {
     @apply text-[var(--color-secondary)];
   }
-  
+
   .bg-secondary {
     @apply bg-[var(--color-secondary)];
   }
-  
+
   .bg-secondary-light {
     @apply bg-[var(--color-secondary-light)];
   }
-  
+
   .bg-secondary-dark {
     @apply bg-[var(--color-secondary-dark)];
   }
-  
+
   /* Line clamp utilities */
   .line-clamp-1 {
     overflow: hidden;
@@ -99,14 +104,14 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
   }
-  
+
   .line-clamp-2 {
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
-  
+
   .line-clamp-3 {
     overflow: hidden;
     display: -webkit-box;
@@ -121,7 +126,8 @@
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -134,7 +140,8 @@
 }
 
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
   25% {
@@ -190,14 +197,14 @@
 }
 
 .ant-btn-primary {
-  background-color: #FF8C00 !important;
-  border-color: #FF8C00 !important;
+  background-color: #ff8c00 !important;
+  border-color: #ff8c00 !important;
 }
 
-.ant-btn-primary:hover, 
+.ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background-color: #FF7000 !important;
-  border-color: #FF7000 !important;
+  background-color: #ff7000 !important;
+  border-color: #ff7000 !important;
 }
 
 .ant-badge-count {
@@ -217,7 +224,10 @@
   color: var(--color-primary);
 }
 
-.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title {
+.ant-steps-item-finish
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title {
   color: var(--color-primary);
 }
 
@@ -268,7 +278,7 @@
     padding-left: 12px;
     padding-right: 12px;
   }
-  
+
   .card {
     padding: 16px;
   }

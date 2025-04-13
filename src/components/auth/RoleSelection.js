@@ -9,13 +9,15 @@ const { Title, Text } = Typography;
 const RoleSelection = ({ onRoleSelect }) => {
   return (
     <div className="text-center">
-      <Title level={3} className="mb-4">I am a...</Title>
-      
+      <Title level={3} className="mb-4">
+        I am a...
+      </Title>
+
       <Space size="large" direction="horizontal">
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Card 
-            hoverable 
-            style={{ width: 200 }} 
+          <Card
+            hoverable
+            style={{ width: 200 }}
             className="text-center"
             onClick={() => onRoleSelect('child')}
           >
@@ -24,11 +26,11 @@ const RoleSelection = ({ onRoleSelect }) => {
             <Text>Fun games and adventures</Text>
           </Card>
         </motion.div>
-        
+
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Card 
-            hoverable 
-            style={{ width: 200 }} 
+          <Card
+            hoverable
+            style={{ width: 200 }}
             className="text-center"
             onClick={() => onRoleSelect('adult')}
           >

@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Tag, Tooltip, Card, Typography, Progress, Spin } from 'antd';
-import { 
-  LockOutlined, 
+import {
+  LockOutlined,
   CheckCircleOutlined,
   FileTextOutlined,
   PlayCircleOutlined,
@@ -11,7 +11,7 @@ import {
   ClockCircleOutlined,
   CodeOutlined,
   RightOutlined,
-  LoadingOutlined
+  LoadingOutlined,
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -37,7 +37,7 @@ const LessonsList = ({ course, topic }) => {
       try {
         // Fetch topic details which includes lessons
         const topicData = await courseService.getTopicById(topic.id, user?.id);
-        
+
         if (topicData && topicData.lessons && Array.isArray(topicData.lessons)) {
           setLessons(topicData.lessons);
         }
@@ -56,10 +56,10 @@ const LessonsList = ({ course, topic }) => {
   // Add debugging in development
   React.useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('LessonsList rendering with:', { 
+      console.log('LessonsList rendering with:', {
         courseId: course?.id,
         topicId: topic?.id,
-        lessonCount: topic?.lessons?.length || 0
+        lessonCount: topic?.lessons?.length || 0,
       });
     }
   }, [course, topic]);
@@ -76,17 +76,15 @@ const LessonsList = ({ course, topic }) => {
   // Check if lessons exist
   if (!topic || !topic.lessons || !Array.isArray(topic.lessons) || topic.lessons.length === 0) {
     return (
-      <div className="text-center py-6 text-gray-500">
-        No lessons available for this topic yet.
-      </div>
+      <div className="text-center py-6 text-gray-500">No lessons available for this topic yet.</div>
     );
   }
-  
+
   // Find the last completed lesson to determine what's unlocked
-  const lastCompletedIndex = topic.lessons.findLastIndex(lesson => 
-    lesson.is_completed || lesson.completed
+  const lastCompletedIndex = topic.lessons.findLastIndex(
+    (lesson) => lesson.is_completed || lesson.completed,
   );
-  
+
   // Get icon based on lesson type and status
   const getLessonIcon = (lesson, isLocked) => {
     if (isLocked) {
@@ -101,7 +99,7 @@ const LessonsList = ({ course, topic }) => {
       return <FileTextOutlined className="text-blue-500" />;
     }
   };
-  
+
   // Get estimated time based on lesson type
   const getLessonTime = (lesson) => {
     if (lesson.estimated_time_minutes) {
@@ -114,7 +112,7 @@ const LessonsList = ({ course, topic }) => {
       return '~10 min';
     }
   };
-  
+
   // Get color class based on lesson type
   const getLessonColor = (lesson) => {
     if (lesson.type === 'quiz') {
@@ -125,27 +123,33 @@ const LessonsList = ({ course, topic }) => {
       return 'default';
     }
   };
-  
+
   return (
     <div className="lessons-list">
       <div className="flex justify-between items-center mb-4">
         <div className="text-sm text-gray-500">
-          {topic.lessons.filter(lesson => lesson.is_completed || lesson.completed).length} of {topic.lessons.length} lessons completed
+          {topic.lessons.filter((lesson) => lesson.is_completed || lesson.completed).length} of{' '}
+          {topic.lessons.length} lessons completed
         </div>
-        <Progress 
-          percent={Math.round((topic.lessons.filter(lesson => lesson.is_completed || lesson.completed).length / topic.lessons.length) * 100)} 
+        <Progress
+          percent={Math.round(
+            (topic.lessons.filter((lesson) => lesson.is_completed || lesson.completed).length /
+              topic.lessons.length) *
+              100,
+          )}
           showInfo={false}
           strokeColor="#1890FF"
           className="w-32"
           size="small"
         />
       </div>
-      
+
       {topic.lessons.map((lesson, index) => {
-        const isLocked = index > lastCompletedIndex + 1 && !(lesson.is_completed || lesson.completed);
+        const isLocked =
+          index > lastCompletedIndex + 1 && !(lesson.is_completed || lesson.completed);
         const isCompleted = lesson.is_completed || lesson.completed;
         const icon = getLessonIcon(lesson, isLocked);
-        
+
         return (
           <motion.div
             key={lesson.id}
@@ -153,46 +157,50 @@ const LessonsList = ({ course, topic }) => {
             transition={{ duration: 0.2 }}
             className="mb-3"
           >
-            <Card 
+            <Card
               className={`border ${
-                isLocked 
-                  ? 'bg-gray-50 cursor-not-allowed' 
-                  : 'hover:shadow-md cursor-pointer'
+                isLocked ? 'bg-gray-50 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'
               }`}
               bodyStyle={{ padding: 16 }}
             >
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  isLocked 
-                    ? 'bg-gray-200' 
-                    : isCompleted 
-                      ? 'bg-green-100' 
-                      : lesson.type === 'quiz'
-                        ? 'bg-purple-100'
-                        : lesson.type === 'coding'
-                          ? 'bg-blue-100'
-                          : 'bg-blue-100'
-                }`}>
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    isLocked
+                      ? 'bg-gray-200'
+                      : isCompleted
+                        ? 'bg-green-100'
+                        : lesson.type === 'quiz'
+                          ? 'bg-purple-100'
+                          : lesson.type === 'coding'
+                            ? 'bg-blue-100'
+                            : 'bg-blue-100'
+                  }`}
+                >
                   {icon}
                 </div>
-                
+
                 <div className="flex-grow min-w-0">
                   <div className="flex items-center mb-1">
                     <Text className={`font-medium ${isLocked ? 'text-gray-500' : ''}`}>
                       {index + 1}. {lesson.title}
                     </Text>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Tag color={getLessonColor(lesson)}>
-                      {lesson.type === 'quiz' ? 'Quiz' : lesson.type === 'coding' ? 'Coding' : 'Lesson'}
+                      {lesson.type === 'quiz'
+                        ? 'Quiz'
+                        : lesson.type === 'coding'
+                          ? 'Coding'
+                          : 'Lesson'}
                     </Tag>
-                    
+
                     <span className="text-xs text-gray-500 flex items-center ml-2">
                       <ClockCircleOutlined className="mr-1" />
                       {getLessonTime(lesson)}
                     </span>
-                    
+
                     {isCompleted && (
                       <Tag color="success" className="ml-2">
                         Completed
@@ -200,7 +208,7 @@ const LessonsList = ({ course, topic }) => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex-shrink-0">
                   {isLocked ? (
                     <Tooltip title="Complete previous lessons to unlock">
@@ -210,7 +218,7 @@ const LessonsList = ({ course, topic }) => {
                       </div>
                     </Tooltip>
                   ) : (
-                    <Link 
+                    <Link
                       to={`/courses/${course.id}/topics/${topic.id}/lessons/${lesson.id}`}
                       className={`flex items-center ${
                         isCompleted ? 'text-green-500' : 'text-primary'

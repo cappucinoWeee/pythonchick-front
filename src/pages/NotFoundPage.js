@@ -20,7 +20,9 @@ const NotFoundPage = () => {
           status="404"
           title={
             <div className="flex flex-col items-center">
-              <Title level={2} className="mt-0">Oops! Page Not Found</Title>
+              <Title level={2} className="mt-0">
+                Oops! Page Not Found
+              </Title>
             </div>
           }
           subTitle={
@@ -30,8 +32,8 @@ const NotFoundPage = () => {
           }
           extra={
             <div className="mt-6 space-y-3">
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 size="large"
                 icon={<HomeFilled />}
                 className="mr-4"
@@ -39,8 +41,8 @@ const NotFoundPage = () => {
               >
                 <Link to="/dashboard">Back to Dashboard</Link>
               </Button>
-              <Button 
-                type="link" 
+              <Button
+                type="link"
                 icon={<ArrowLeftOutlined />}
                 onClick={() => window.history.back()}
               >
@@ -49,14 +51,12 @@ const NotFoundPage = () => {
             </div>
           }
         />
-        
+
         <div className="mt-8 text-gray-500">
           <Paragraph>
             Looking for something specific? Try navigating through the main menu.
           </Paragraph>
-          <div className="mt-4 text-xs">
-            Error Code: 404 Page Not Found
-          </div>
+          <div className="mt-4 text-xs">Error Code: 404 Page Not Found</div>
         </div>
       </motion.div>
     </div>

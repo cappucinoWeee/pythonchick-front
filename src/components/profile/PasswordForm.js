@@ -8,10 +8,7 @@ const PasswordForm = ({ loading, onFinish }) => {
     <Row justify="center">
       <Col xs={24} sm={20} md={16} lg={12}>
         <Card className="shadow-sm">
-          <Form
-            layout="vertical"
-            onFinish={onFinish}
-          >
+          <Form layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="currentPassword"
               label="Current Password"
@@ -19,18 +16,18 @@ const PasswordForm = ({ loading, onFinish }) => {
             >
               <Input.Password prefix={<LockOutlined className="text-gray-400" />} />
             </Form.Item>
-            
+
             <Form.Item
               name="newPassword"
               label="New Password"
               rules={[
                 { required: true, message: 'Please enter your new password!' },
-                { min: 8, message: 'Password must be at least 8 characters!' }
+                { min: 8, message: 'Password must be at least 8 characters!' },
               ]}
             >
               <Input.Password prefix={<LockOutlined className="text-gray-400" />} />
             </Form.Item>
-            
+
             <Form.Item
               name="confirmPassword"
               label="Confirm New Password"
@@ -49,13 +46,9 @@ const PasswordForm = ({ loading, onFinish }) => {
             >
               <Input.Password prefix={<LockOutlined className="text-gray-400" />} />
             </Form.Item>
-            
+
             <Form.Item>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={loading}
-              >
+              <Button type="primary" htmlType="submit" loading={loading}>
                 Update Password
               </Button>
             </Form.Item>

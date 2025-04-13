@@ -1,23 +1,13 @@
 // src/pages/ForgotPasswordPage.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Card, 
-  Steps, 
-  Typography, 
-  Alert, 
-  Divider,
-  message
-} from 'antd';
-import { 
-  MailOutlined, 
-  LockOutlined, 
-  KeyOutlined, 
+import { Form, Input, Button, Card, Steps, Typography, Alert, Divider, message } from 'antd';
+import {
+  MailOutlined,
+  LockOutlined,
+  KeyOutlined,
   CheckCircleFilled,
-  ArrowLeftOutlined
+  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import authService from '../services/authService';
@@ -39,7 +29,7 @@ const ForgotPasswordPage = () => {
     setLoading(true);
     setEmail(values.email);
     setError('');
-    
+
     try {
       // Call API to request password reset
       await authService.requestPasswordReset(values.email);
@@ -52,12 +42,12 @@ const ForgotPasswordPage = () => {
       setLoading(false);
     }
   };
-  
+
   // Step 2: Verify code
   const handleVerifyCode = async (values) => {
     setLoading(true);
     setError('');
-    
+
     try {
       // Call API to verify reset token
       await authService.verifyResetToken(email, values.token);
@@ -70,12 +60,12 @@ const ForgotPasswordPage = () => {
       setLoading(false);
     }
   };
-  
+
   // Step 3: Set new password
   const handleSetNewPassword = async (values) => {
     setLoading(true);
     setError('');
-    
+
     try {
       // Call API to reset password
       await authService.resetPassword(email, token, values.password);
@@ -88,12 +78,12 @@ const ForgotPasswordPage = () => {
       setLoading(false);
     }
   };
-  
+
   // Handle login navigation after reset
   const handleGoToLogin = () => {
     navigate('/login');
   };
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <motion.div
@@ -104,22 +94,20 @@ const ForgotPasswordPage = () => {
       >
         <Card className="shadow-lg border-0">
           <div className="text-center mb-6">
-            <img 
-              src="/logo.png" 
-              alt="Pythonchick" 
-              className="h-16 mx-auto"
-            />
-            <Title level={3} className="font-display text-primary mt-2">Reset Password</Title>
+            <img src="/logo.png" alt="Pythonchick" className="h-16 mx-auto" />
+            <Title level={3} className="font-display text-primary mt-2">
+              Reset Password
+            </Title>
             <Text className="text-gray-600">Follow the steps to reset your password</Text>
           </div>
-          
+
           <Steps current={currentStep} className="mb-8" size="small">
             <Step title="Request" />
             <Step title="Verify" />
             <Step title="Reset" />
             <Step title="Complete" />
           </Steps>
-          
+
           {error && (
             <Alert
               message={error}
@@ -130,35 +118,32 @@ const ForgotPasswordPage = () => {
               onClose={() => setError('')}
             />
           )}
-          
+
           {/* Step 1: Request password reset */}
           {currentStep === 0 && (
-            <Form
-              name="password-reset-request"
-              onFinish={handleRequestReset}
-              layout="vertical"
-            >
+            <Form name="password-reset-request" onFinish={handleRequestReset} layout="vertical">
               <Paragraph className="mb-4">
-                Enter your email address and we'll send you a verification code to reset your password.
+                Enter your email address and we'll send you a verification code to reset your
+                password.
               </Paragraph>
-              
+
               <Form.Item
                 name="email"
                 rules={[
                   { required: true, message: 'Please enter your email!' },
-                  { type: 'email', message: 'Please enter a valid email!' }
+                  { type: 'email', message: 'Please enter a valid email!' },
                 ]}
               >
-                <Input 
-                  prefix={<MailOutlined className="text-gray-400" />} 
+                <Input
+                  prefix={<MailOutlined className="text-gray-400" />}
                   placeholder="Email address"
                   size="large"
                   className="rounded-lg"
                 />
               </Form.Item>
-              
+
               <Form.Item>
-                <Button 
+                <Button
                   type="primary"
                   htmlType="submit"
                   size="large"
@@ -170,7 +155,7 @@ const ForgotPasswordPage = () => {
                   Send Verification Code
                 </Button>
               </Form.Item>
-              
+
               <div className="text-center mt-4">
                 <Link to="/login" className="text-primary">
                   <ArrowLeftOutlined className="mr-1" />
@@ -179,14 +164,10 @@ const ForgotPasswordPage = () => {
               </div>
             </Form>
           )}
-          
+
           {/* Step 2: Enter verification code */}
           {currentStep === 1 && (
-            <Form
-              name="verify-code"
-              onFinish={handleVerifyCode}
-              layout="vertical"
-            >
+            <Form name="verify-code" onFinish={handleVerifyCode} layout="vertical">
               <Alert
                 message="Verification Code Sent"
                 description={`We've sent a 6-digit code to ${email}. Please check your inbox and enter the code below.`}
@@ -194,24 +175,24 @@ const ForgotPasswordPage = () => {
                 showIcon
                 className="mb-4"
               />
-              
+
               <Form.Item
                 name="token"
                 rules={[
                   { required: true, message: 'Please enter the verification code!' },
-                  { min: 6, message: 'Verification code must be at least 6 characters!' }
+                  { min: 6, message: 'Verification code must be at least 6 characters!' },
                 ]}
               >
-                <Input 
-                  prefix={<KeyOutlined className="text-gray-400" />} 
+                <Input
+                  prefix={<KeyOutlined className="text-gray-400" />}
                   placeholder="6-digit code"
                   size="large"
                   className="rounded-lg"
                 />
               </Form.Item>
-              
+
               <Form.Item>
-                <Button 
+                <Button
                   type="primary"
                   htmlType="submit"
                   size="large"
@@ -223,29 +204,20 @@ const ForgotPasswordPage = () => {
                   Verify Code
                 </Button>
               </Form.Item>
-              
+
               <Divider plain>Didn't receive the code?</Divider>
-              
+
               <div className="text-center">
-                <Button 
-                  type="link" 
-                  onClick={() => setCurrentStep(0)}
-                  disabled={loading}
-                >
+                <Button type="link" onClick={() => setCurrentStep(0)} disabled={loading}>
                   Resend Code
                 </Button>
               </div>
             </Form>
           )}
-          
+
           {/* Step 3: Create new password */}
           {currentStep === 2 && (
-            <Form
-              name="new-password"
-              onFinish={handleSetNewPassword}
-              layout="vertical"
-              form={form}
-            >
+            <Form name="new-password" onFinish={handleSetNewPassword} layout="vertical" form={form}>
               <Alert
                 message="Email Verified"
                 description="Your email has been verified. Please create a new password."
@@ -253,13 +225,13 @@ const ForgotPasswordPage = () => {
                 showIcon
                 className="mb-4"
               />
-              
+
               <Form.Item
                 name="password"
                 label="New Password"
                 rules={[
                   { required: true, message: 'Please enter your new password!' },
-                  { min: 8, message: 'Password must be at least 8 characters!' }
+                  { min: 8, message: 'Password must be at least 8 characters!' },
                 ]}
               >
                 <Input.Password
@@ -269,7 +241,7 @@ const ForgotPasswordPage = () => {
                   className="rounded-lg"
                 />
               </Form.Item>
-              
+
               <Form.Item
                 name="confirmPassword"
                 label="Confirm Password"
@@ -293,9 +265,9 @@ const ForgotPasswordPage = () => {
                   className="rounded-lg"
                 />
               </Form.Item>
-              
+
               <Form.Item>
-                <Button 
+                <Button
                   type="primary"
                   htmlType="submit"
                   size="large"
@@ -309,7 +281,7 @@ const ForgotPasswordPage = () => {
               </Form.Item>
             </Form>
           )}
-          
+
           {/* Step 4: Reset complete */}
           {currentStep === 3 && (
             <div className="text-center py-8">
@@ -321,13 +293,16 @@ const ForgotPasswordPage = () => {
                 <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
                   <CheckCircleFilled className="text-4xl text-green-500" />
                 </div>
-                
-                <Title level={3} className="mb-2">Password Reset Successful!</Title>
+
+                <Title level={3} className="mb-2">
+                  Password Reset Successful!
+                </Title>
                 <Paragraph className="text-gray-600 mb-6">
-                  Your password has been reset successfully. You can now log in with your new password.
+                  Your password has been reset successfully. You can now log in with your new
+                  password.
                 </Paragraph>
-                
-                <Button 
+
+                <Button
                   type="primary"
                   size="large"
                   block

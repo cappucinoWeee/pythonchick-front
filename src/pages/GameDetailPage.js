@@ -27,7 +27,7 @@ const GameDetailPage = () => {
       setLoading(true);
       try {
         const gameData = await gameService.getGameBySlug(slug, user?.id);
-        console.log(gameData)
+        console.log(gameData);
         setGame({
           id: gameData.id,
           title: gameData.title,
@@ -214,7 +214,9 @@ const GameDetailPage = () => {
               </div>
               <div>
                 <strong>Category:</strong>
-                <span className="ml-2">{game.category.charAt(0).toUpperCase() + game.category.slice(1)}</span>
+                <span className="ml-2">
+                  {game.category.charAt(0).toUpperCase() + game.category.slice(1)}
+                </span>
               </div>
               <div>
                 <strong>Estimated Time:</strong>
@@ -226,8 +228,8 @@ const GameDetailPage = () => {
                   {userProgress?.completed
                     ? 'Completed'
                     : userProgress?.started
-                    ? 'In Progress'
-                    : 'Not Started'}
+                      ? 'In Progress'
+                      : 'Not Started'}
                 </span>
               </div>
             </div>
@@ -236,13 +238,15 @@ const GameDetailPage = () => {
       </Card>
 
       <Tabs defaultActiveKey="play">
-        <TabPane tab="Play Game" key="play">{renderGameComponent()}</TabPane>
+        <TabPane tab="Play Game" key="play">
+          {renderGameComponent()}
+        </TabPane>
         <TabPane tab="Instructions" key="instructions">
           <Card className="shadow-md border-0">
             <Title level={3}>How to Play</Title>
             <Paragraph>
-              In this game, you'll use your Python coding skills to solve various challenges. Each challenge
-              presents a problem to solve using Python code.
+              In this game, you'll use your Python coding skills to solve various challenges. Each
+              challenge presents a problem to solve using Python code.
             </Paragraph>
             <ul className="list-disc pl-6 mb-4">
               <li>Read the challenge description carefully</li>

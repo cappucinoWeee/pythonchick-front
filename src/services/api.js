@@ -9,16 +9,16 @@ const apiClient = axios.create({
   withCredentials: API_CONFIG.WITH_CREDENTIALS,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  }
+    Accept: 'application/json',
+  },
 });
 
 // Log the configuration in development mode
 if (process.env.NODE_ENV === 'development') {
-  console.log('API Config:', { 
+  console.log('API Config:', {
     baseURL: API_CONFIG.BASE_URL,
     timeout: API_CONFIG.TIMEOUT,
-    withCredentials: API_CONFIG.WITH_CREDENTIALS
+    withCredentials: API_CONFIG.WITH_CREDENTIALS,
   });
 }
 
@@ -34,7 +34,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor for handling common errors
@@ -45,26 +45,26 @@ apiClient.interceptors.response.use(
   (error) => {
     // Log detailed errors in development
     console.error('API Error:', error.response || error);
-    
+
     // Handle 401 Unauthorized errors (token expired)
     if (error.response && error.response.status === 401) {
       // Clear token and redirect to login if not on login page
       if (!window.location.pathname.includes('/login')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        
+
         // Show message about session expiration
         if (window.antMessage) {
           window.antMessage.error('Your session has expired. Please log in again.');
         }
-        
+
         // Redirect to login page
         window.location.href = '/login';
       }
     }
-    
+
     return Promise.reject(error);
-  }
+  },
 );
 
 // Allow antMessage to be set

@@ -17,7 +17,7 @@ const GamesSection = () => {
       image: '/games/python-adventure.png',
       difficulty: 'Beginner',
       xp: 150,
-      unlocked: true
+      unlocked: true,
     },
     {
       id: 2,
@@ -26,7 +26,7 @@ const GamesSection = () => {
       image: '/games/code-rescue.png',
       difficulty: 'Intermediate',
       xp: 300,
-      unlocked: true
+      unlocked: true,
     },
     {
       id: 3,
@@ -35,7 +35,7 @@ const GamesSection = () => {
       image: '/games/logic-castle.png',
       difficulty: 'Intermediate',
       xp: 250,
-      unlocked: false
+      unlocked: false,
     },
     {
       id: 4,
@@ -44,41 +44,38 @@ const GamesSection = () => {
       image: '/games/debug-detective.png',
       difficulty: 'Advanced',
       xp: 400,
-      unlocked: false
-    }
+      unlocked: false,
+    },
   ];
 
   return (
     <Card className="shadow-md border-0 mb-6">
       <div className="flex justify-between items-center mb-4">
-        <Title level={4} className="m-0">Fun Coding Games</Title>
-        <Link to="/games" className="text-primary">View All</Link>
+        <Title level={4} className="m-0">
+          Fun Coding Games
+        </Title>
+        <Link to="/games" className="text-primary">
+          View All
+        </Link>
       </div>
-      
+
       <Row gutter={[16, 16]}>
-        {games.slice(0, 3).map(game => (
+        {games.slice(0, 3).map((game) => (
           <Col xs={24} sm={12} md={8} key={game.id}>
-            <motion.div
-              whileHover={{ y: -5 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Card 
+            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+              <Card
                 hoverable
                 cover={
                   <div className="relative h-40 overflow-hidden">
-                    <img 
-                      alt={game.title}
-                      src={game.image}
-                      className="w-full h-full object-cover"
-                    />
-                    
+                    <img alt={game.title} src={game.image} className="w-full h-full object-cover" />
+
                     {!game.unlocked && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                         <LockOutlined className="text-3xl text-white" />
                       </div>
                     )}
-                    
-                    <Badge 
+
+                    <Badge
                       count={game.difficulty}
                       style={{ backgroundColor: game.unlocked ? '#52c41a' : '#8c8c8c' }}
                       className="absolute top-2 right-2"
@@ -87,15 +84,15 @@ const GamesSection = () => {
                 }
                 actions={[
                   <Link to={game.unlocked ? `/games/${game.id}` : '#'}>
-                    <Button 
-                      type="primary" 
+                    <Button
+                      type="primary"
                       icon={<RocketOutlined />}
                       disabled={!game.unlocked}
                       block
                     >
                       {game.unlocked ? 'Play Now' : 'Locked'}
                     </Button>
-                  </Link>
+                  </Link>,
                 ]}
               >
                 <Card.Meta
