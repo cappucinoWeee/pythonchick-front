@@ -1,5 +1,6 @@
 // src/services/gameService.js
 import apiClient from './api';
+import gamesMockData from '../data/gamesMockData';
 
 const gameService = {
   // Get coding challenges
@@ -187,7 +188,10 @@ const gameService = {
       const params = user.id ? { user_id: user.id } : {};
       
       const response = await apiClient.get(`/game/${slug}`, { params });
-      return response.data;
+      const game = response.data;
+      const data = gamesMockData.find(g => g.slug === slug);
+      game.scenes = data.gameData;
+      return data;
     } catch (error) {
       console.error(`Get game ${slug} error:`, error);
       

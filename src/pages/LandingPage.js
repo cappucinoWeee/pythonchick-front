@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 
 const LandingPage = () => {
   return (

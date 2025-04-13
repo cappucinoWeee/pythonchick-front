@@ -37,6 +37,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import LandingPage from './pages/LandingPage';
 import GamesPage from './pages/GamesPage';
 import GameDetailPage from './pages/GameDetailPage';
+import GamePage from './pages/GamePage';
 
 // Custom theme configuration for Ant Design
 const theme = {
@@ -80,7 +81,8 @@ function App() {
                 <Route element={<MainLayout />}>
                   <Route index element={<Navigate to="/dashboard" replace />} />
                   <Route path="games" element={<GamesPage />} />
-                  <Route path="games/:gameId" element={<GameDetailPage />} />
+                  <Route path="games/:slug" element={<GameDetailPage />} />
+                  <Route path="games/custom" element={<GamePage />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="courses" element={<CoursesPage />} />
                   <Route path="courses/:courseId" element={<CourseDetailPage />} />
@@ -88,8 +90,6 @@ function App() {
                   <Route path="courses/:courseId/topics/:topicId/lessons/:lessonId" element={<LessonPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="leaderboard" element={<LeaderboardPage />} />
-                  {/* Games route commented out as requested */}
-                  {/* <Route path="games" element={<GamesPage />} /> */}
                   <Route path="compiler" element={<CompilerPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

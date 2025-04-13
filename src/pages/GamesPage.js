@@ -19,11 +19,7 @@ import {
 import { Link } from 'react-router-dom';
 import { 
   HomeOutlined, 
-  PlayCircleOutlined, 
-  RocketOutlined, 
-  TrophyOutlined,
-  SearchOutlined,
-  LockOutlined
+  PlayCircleOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import GameCard from '../components/games/GameCard';
@@ -36,7 +32,6 @@ const { Search } = Input;
 const { Option } = Select;
 
 const GamesPage = () => {
-  const { user } = useAuth();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');

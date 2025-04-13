@@ -7,20 +7,33 @@ import CodeCompiler from '../../compiler/CodeCompiler';
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
 
-const AdventureGame = ({ gameData, onComplete, onScoreUpdate }) => {
+const AdventureGame = ({ gameData, onComplete, onScoreUpdate, userProgress }) => {
   const [currentScene, setCurrentScene] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   
-  const scenes = gameData.scenes || [];
-  const progress = Math.round(((currentScene + 1) / scenes.length) * 100);
+  // Make sure gameData.scenes exists before trying to access it
+  const scenes = gameData?.scenes || [];
+  const progress = scenes.length > 0 ? Math.round(((currentScene + 1) / scenes.length) * 100) : 0;
+  
+  // Initialize from user progress if available
+  useEffect(() => {
+    if (userProgress) {
+      setScore(userProgress.score || 0);
+      if (userProgress.currentLevel !== undefined) {
+        setCurrentScene(userProgress.currentLevel);
+      }
+      setCompleted(userProgress.completed || false);
+    }
+  }, [userProgress]);
   
   const handleCodeSuccess = (code) => {
     setFeedback('success');
-    setScore(prevScore => prevScore + 10);
-    onScoreUpdate && onScoreUpdate(score + 10);
+    const newScore = score + 10;
+    setScore(newScore);
+    onScoreUpdate && onScoreUpdate(newScore);
     
     setTimeout(() => {
       if (currentScene < scenes.length - 1) {
@@ -29,7 +42,7 @@ const AdventureGame = ({ gameData, onComplete, onScoreUpdate }) => {
         setShowHint(false);
       } else {
         setCompleted(true);
-        onComplete && onComplete(score + 10);
+        onComplete && onComplete(newScore);
       }
     }, 1500);
   };
@@ -41,6 +54,7 @@ const AdventureGame = ({ gameData, onComplete, onScoreUpdate }) => {
     }, 1500);
   };
   
+  // If game is already completed, show completion screen
   if (completed) {
     return (
       <Card className="text-center py-8">
@@ -56,7 +70,36 @@ const AdventureGame = ({ gameData, onComplete, onScoreUpdate }) => {
     );
   }
   
+  // No scenes available, show loading or empty state
+  if (scenes.length === 0) {
+    return (
+      <Card className="text-center py-8">
+        <Title level={3}>No adventure scenes available</Title>
+        <Paragraph>
+          There appears to be no content for this adventure yet.
+        </Paragraph>
+        <Button type="primary" onClick={() => window.location.href = '/games'}>
+          Back to Games
+        </Button>
+      </Card>
+    );
+  }
+  
+  // Make sure the current scene exists and is valid
   const scene = scenes[currentScene];
+  if (!scene) {
+    return (
+      <Card className="text-center py-8">
+        <Title level={3}>Scene not found</Title>
+        <Paragraph>
+          The requested scene couldn't be loaded.
+        </Paragraph>
+        <Button type="primary" onClick={() => window.location.href = '/games'}>
+          Back to Games
+        </Button>
+      </Card>
+    );
+  }
   
   return (
     <div className="adventure-game">
@@ -75,7 +118,7 @@ const AdventureGame = ({ gameData, onComplete, onScoreUpdate }) => {
         {scene.image && (
           <div className="mb-4">
             <img 
-              src={scene.image} 
+              src={scene.image || scene.background} 
               alt={scene.title} 
               className="rounded-lg max-w-full h-auto"
             />
@@ -85,58 +128,51 @@ const AdventureGame = ({ gameData, onComplete, onScoreUpdate }) => {
       
       <Card>
         <Title level={4}>Challenge</Title>
-        <Paragraph>{scene.challenge.instructions}</Paragraph>
+        {scene.challenge && (
+          <>
+            <Paragraph>{scene.challenge.instructions}</Paragraph>
+            
+            {showHint && scene.hints && scene.hints.length > 0 && (
+              <Collapse className="mb-4">
+                <Panel header="Hints" key="1">
+                  <ul className="list-disc pl-4">
+                    {scene.hints.map((hint, index) => (
+                      <li key={index}>{hint}</li>
+                    ))}
+                  </ul>
+                </Panel>
+              </Collapse>
+            )}
+            
+            {feedback === 'success' && (
+              <Alert
+                message="Correct!"
+                description="Great job! You solved the challenge."
+                type="success"
+                showIcon
+                className="mb-4"
+              />
+            )}
         
-        {showHint && (
-          <Collapse className="mb-4">
-            <Panel header="Hints" key="1">
-              <ul className="list-disc pl-4">
-                {scene.hints.map((hint, index) => (
-                  <li key={index}>{hint}</li>
-                ))}
-              </ul>
-            </Panel>
-          </Collapse>
-        )}
-        
-        {feedback === 'success' && (
-          <Alert
-            message="Correct!"
-            description="Great job! You solved the challenge."
-            type="success"
-            showIcon
-            className="mb-4"
-          />
-        )}
-        
-        {feedback === 'error' && (
-          <Alert
-            message="Not quite right"
-            description="Try again! Check the hints if you need help."
-            type="error"
-            showIcon
-            className="mb-4"
-          />
-        )}
-        
-        <CodeCompiler
-          initialCode={scene.challenge.starterCode}
-          expectedOutput={scene.challenge.expectedOutput}
-          onSuccess={handleCodeSuccess}
-          onError={handleCodeError}
-        />
-        
-        <div className="mt-4 flex justify-between">
-          <Button onClick={() => setShowHint(!showHint)}>
-            {showHint ? 'Hide Hints' : 'Show Hints'}
-          </Button>
-          
-          {currentScene > 0 && (
-            <Button onClick={() => setCurrentScene(currentScene - 1)}>
-              Previous Scene
+            <CodeCompiler
+            initialCode={scene.challenge.starterCode}
+            expectedOutput={scene.challenge.expectedOutput}
+            onSuccess={handleCodeSuccess}
+            onError={handleCodeError}
+            />
+            
+            <div className="mt-4 flex justify-between">
+            <Button onClick={() => setShowHint(!showHint)}>
+                {showHint ? 'Hide Hints' : 'Show Hints'}
             </Button>
-          )}
-        </div>
+            
+            {currentScene > 0 && (
+                <Button onClick={() => setCurrentScene(currentScene - 1)}>
+                Previous Scene
+                </Button>
+            )}
+            </div>
+        </>)}
       </Card>
     </div>
   );
