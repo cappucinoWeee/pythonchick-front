@@ -18,7 +18,7 @@ Frontend: ReactJS, Java Script, HTML, CSS
 
 Backend: Python
 
-Database: Railway, MuSQL
+Database: Railway, MySQL
 
 Design:Figma, Adobe
 
